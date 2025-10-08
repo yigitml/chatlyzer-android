@@ -300,7 +300,7 @@ object MessageConverterFactory {
             return ChatPlatform.WHATSAPP
         }
 
-        else throw Error("Platform couldn't be identified")
+        else throw Exception("Platform couldn't be identified")
     }
 
     fun convertMessages(
