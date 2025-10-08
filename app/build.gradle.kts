@@ -8,12 +8,12 @@ plugins {
 
 android {
     namespace = "com.ch3x.chatlyzer"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.ch3x.chatlyzer"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 2
         versionName = "1.1"
 
