@@ -10,5 +10,6 @@ data class AnalysisDto(
     @SerializedName("updatedAt") val updatedAt: Date,
     @SerializedName("chatId")    val chatId: String,
     @SerializedName("userId")    val userId: String?,
-    @SerializedName("deletedAt") val deletedAt: Date? = null
+    @SerializedName("deletedAt") val deletedAt: Date? = null,
+    @SerializedName("status")    val status: String
 )

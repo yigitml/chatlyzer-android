@@ -101,6 +101,19 @@ data class AnalysisDeleteRequest(
     val id: String
 )
 
+data class PrivacyAnalysisPostRequest(
+    val title: String,
+    val isGhostMode: Boolean,
+    val messages: String
+) {
+    data class Message(
+        val sender: String,
+        val timestamp: Date? = null,
+        val content: String,
+        val metadata: Any? = null
+    )
+}
+
 data class MessageGetRequest(
     val id: String? = null,
     val chatId: String? = null

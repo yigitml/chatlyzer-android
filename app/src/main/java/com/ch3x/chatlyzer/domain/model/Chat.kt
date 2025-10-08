@@ -12,5 +12,6 @@ data class Chat(
     val messages: List<Message> = emptyList(),
     val analyzes: List<Analysis> = emptyList(),
     val files: List<File> = emptyList(),
-    val deletedAt: Date? = null
+    val deletedAt: Date? = null,
+    val isPrivacy: Boolean
 )

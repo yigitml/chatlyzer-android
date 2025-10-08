@@ -33,7 +33,8 @@ fun Chat.toEntity(): ChatEntity {
         participants = converter.fromStringList(participants),
         createdAt = createdAt,
         updatedAt = updatedAt,
-        deletedAt = deletedAt
+        deletedAt = deletedAt,
+        isPrivacy = isPrivacy
     )
 }
 
@@ -49,7 +50,8 @@ fun ChatEntity.toDomain(): Chat {
         messages = emptyList(),
         analyzes = emptyList<Analysis>(),
         files = emptyList(),
-        deletedAt = deletedAt
+        deletedAt = deletedAt,
+        isPrivacy = isPrivacy
     )
 }
 
@@ -60,7 +62,8 @@ fun Chat.toDto() = ChatDto(
     participants = participants,
     createdAt = createdAt,
     updatedAt = updatedAt,
-    deletedAt = deletedAt
+    deletedAt = deletedAt,
+    isPrivacy = isPrivacy
 )
 
 fun ChatDto.toDomain() = Chat(
@@ -73,7 +76,8 @@ fun ChatDto.toDomain() = Chat(
     messages = emptyList(),
     analyzes = emptyList<Analysis>(),
     files = emptyList(),
-    deletedAt = deletedAt
+    deletedAt = deletedAt,
+    isPrivacy = isPrivacy
 )
 
 fun Message.toEntity() = MessageEntity(
@@ -191,7 +195,8 @@ fun Analysis.toEntity() = AnalysisEntity(
     updatedAt = updatedAt,
     chatId = chatId,
     userId = userId,
-    deletedAt = deletedAt
+    deletedAt = deletedAt,
+    status = status
 )
 
 fun AnalysisEntity.toDomain() = Analysis(
@@ -201,7 +206,8 @@ fun AnalysisEntity.toDomain() = Analysis(
     updatedAt = updatedAt,
     chatId = chatId,
     userId = userId,
-    deletedAt = deletedAt
+    deletedAt = deletedAt,
+    status = status
 )
 
 fun Analysis.toDto() = AnalysisDto(
@@ -211,7 +217,8 @@ fun Analysis.toDto() = AnalysisDto(
     updatedAt = updatedAt,
     chatId = chatId,
     userId = userId,
-    deletedAt = deletedAt
+    deletedAt = deletedAt,
+    status = status
 )
 
 fun AnalysisDto.toDomain() = Analysis(
@@ -221,7 +228,8 @@ fun AnalysisDto.toDomain() = Analysis(
     updatedAt = updatedAt,
     chatId = chatId,
     userId = userId,
-    deletedAt = deletedAt
+    deletedAt = deletedAt,
+    status = status
 )
 
 fun Credit.toEntity() = CreditEntity(

@@ -11,6 +11,7 @@ data class ChatDto(
     @SerializedName("createdAt")  val createdAt: Date,
     @SerializedName("updatedAt")  val updatedAt: Date,
     @SerializedName("deletedAt")  val deletedAt: Date? = null,
+    @SerializedName("isPrivacy")  val isPrivacy: Boolean
 
     // TODO: Make server send messages, analyzes and files along with the chat data
 

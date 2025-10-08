@@ -9,5 +9,6 @@ data class Analysis(
     val createdAt: Date,
     val updatedAt: Date,
     val userId: String?,
-    val deletedAt: Date? = null
+    val deletedAt: Date? = null,
+    val status: String
 ) 

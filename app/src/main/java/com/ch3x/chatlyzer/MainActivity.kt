@@ -30,6 +30,7 @@ import kotlinx.coroutines.flow.launchIn
 import javax.inject.Inject
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.ch3x.chatlyzer.ui.screens.landing.LandingScreen
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -70,7 +71,7 @@ class MainActivity : ComponentActivity() {
 
                     AppNavigation(
                         context = this@MainActivity,
-                        startDestination = startDestination,
+                        startDestination = Screen.Landing.route, //startDestination,
                         launchCount = launchCount.value,
                         onBoardingCompleted = onBoardingCompleted.value
                     )

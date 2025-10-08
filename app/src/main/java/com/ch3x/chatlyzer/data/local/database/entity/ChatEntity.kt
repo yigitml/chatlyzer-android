@@ -26,5 +26,6 @@ data class ChatEntity(
     val participants: String,
     val createdAt: Date,
     val updatedAt: Date,
-    val deletedAt: Date? = null
+    val deletedAt: Date? = null,
+    val isPrivacy: Boolean
 )

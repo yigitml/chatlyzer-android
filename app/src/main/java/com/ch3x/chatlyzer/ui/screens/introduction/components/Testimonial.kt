@@ -6,7 +6,7 @@ data class Testimonial(
     val name: String,
     val subtitle: String,
     val content: String,
-    val imageResId: Int = R.drawable.defne,
+    val imageResId: Int = R.drawable.left_laurel, // TODO
     val rating: Int = 5
 ) {
     companion object {

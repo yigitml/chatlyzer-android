@@ -34,5 +34,6 @@ data class AnalysisEntity(
     val updatedAt: Date,
     val chatId: String,
     val userId: String?,
-    val deletedAt: Date? = null
+    val deletedAt: Date? = null,
+    val status: String
 )
