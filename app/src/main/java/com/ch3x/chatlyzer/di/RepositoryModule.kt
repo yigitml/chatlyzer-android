@@ -14,6 +14,7 @@ import com.ch3x.chatlyzer.data.remote.api.ChatApi
 import com.ch3x.chatlyzer.data.remote.api.CreditApi
 import com.ch3x.chatlyzer.data.remote.api.FileApi
 import com.ch3x.chatlyzer.data.remote.api.MessageApi
+import com.ch3x.chatlyzer.data.remote.api.PrivacyAnalysisApi
 import com.ch3x.chatlyzer.data.remote.api.SubscriptionApi
 import com.ch3x.chatlyzer.data.remote.api.UserApi
 import com.ch3x.chatlyzer.data.repository.AnalysisRepositoryImpl
@@ -23,6 +24,7 @@ import com.ch3x.chatlyzer.data.repository.ChatRepositoryImpl
 import com.ch3x.chatlyzer.data.repository.CreditRepositoryImpl
 import com.ch3x.chatlyzer.data.repository.FileRepositoryImpl
 import com.ch3x.chatlyzer.data.repository.MessageRepositoryImpl
+import com.ch3x.chatlyzer.data.repository.PrivacyAnalysisRepositoryImpl
 import com.ch3x.chatlyzer.data.repository.SubscriptionRepositoryImpl
 import com.ch3x.chatlyzer.data.repository.UserRepositoryImpl
 import com.ch3x.chatlyzer.domain.repository.AnalysisRepository
@@ -32,6 +34,7 @@ import com.ch3x.chatlyzer.domain.repository.ChatRepository
 import com.ch3x.chatlyzer.domain.repository.CreditRepository
 import com.ch3x.chatlyzer.domain.repository.FileRepository
 import com.ch3x.chatlyzer.domain.repository.MessageRepository
+import com.ch3x.chatlyzer.domain.repository.PrivacyAnalysisRepository
 import com.ch3x.chatlyzer.domain.repository.SubscriptionRepository
 import com.ch3x.chatlyzer.domain.repository.UserRepository
 import dagger.Provides
@@ -57,6 +60,13 @@ object RepositoryModule {
         analysisApi: AnalysisApi,
         analysisDao: AnalysisDao
     ): AnalysisRepository = AnalysisRepositoryImpl(analysisApi, analysisDao)
+
+    @Provides
+    @Singleton
+    fun providesPrivacyAnalysisRepository(
+        privacyAnalysisApi: PrivacyAnalysisApi,
+        analysisDao: AnalysisDao
+    ): PrivacyAnalysisRepository = PrivacyAnalysisRepositoryImpl(privacyAnalysisApi, analysisDao)
 
     @Provides
     @Singleton

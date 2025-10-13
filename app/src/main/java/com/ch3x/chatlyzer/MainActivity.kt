@@ -71,7 +71,7 @@ class MainActivity : ComponentActivity() {
 
                     AppNavigation(
                         context = this@MainActivity,
-                        startDestination = Screen.Landing.route, //startDestination,
+                        startDestination = Screen.Landing.route, // startDestination,
                         launchCount = launchCount.value,
                         onBoardingCompleted = onBoardingCompleted.value
                     )
