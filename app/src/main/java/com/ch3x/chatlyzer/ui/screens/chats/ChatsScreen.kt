@@ -35,7 +35,9 @@ private fun PreviewChatsScreen() {
     ChatlyzerTheme {
         ChatsScreen(
             onNavigateAnalysis = {},
-            onCreateChat = {}
+            onCreateChat = {
+
+            }
         )
     }
 }

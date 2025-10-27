@@ -18,7 +18,8 @@ data class ChatCreateState(
     val detectedPlatform: ChatPlatform? = null,
     val selectedPlatform: ChatPlatform = ChatPlatform.WHATSAPP,
     val showPlatformSelector: Boolean = false,
-    val importedFileInfo: ImportedFileInfo? = null
+    val importedFileInfo: ImportedFileInfo? = null,
+    val analysisType: AnalysisType = AnalysisType.NORMAL
 )
 
 @Immutable
@@ -27,4 +28,10 @@ data class ImportedFileInfo(
     val fileSize: Long,
     val messageCount: Int,
     val platform: ChatPlatform
-) 
+)
+
+enum class AnalysisType{
+    NORMAL,
+    PRIVACY,
+    GHOST
+}

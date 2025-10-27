@@ -22,25 +22,11 @@ fun <T> ApiResponse<T>.requireDataOrThrow(): T {
     throw Exception("Response data is null")
 }
 
-/*
-// TODO: Debug this function
 fun parseRetrofitError(e: HttpException): String {
-    val errorBody = e.response()?.errorBody()?.string()
-    val apiError = try {
-        Gson().fromJson(errorBody, ApiResponse::class.java)
-    } catch (_: Exception) {
-        null
-    }
-    val e = apiError?.message ?: apiError?.error ?: "HTTP ${e.code()} Error"
-    return e
-}
-
- */
-
-fun parseRetrofitError(e: HttpException): String {
-    println(e)
     return try {
         val errorBody = e.response()?.errorBody()?.string()
+        println("Retrofit error body: $errorBody")
+
         val apiError = Gson().fromJson(errorBody, ApiResponse::class.java)
         apiError?.message ?: apiError?.error ?: "HTTP ${e.code()} Error"
     } catch (ex: Exception) {

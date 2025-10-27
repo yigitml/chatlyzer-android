@@ -83,7 +83,7 @@ fun ChatCreateScreen(
                     modifier = Modifier.padding(paddingValues),
                     state = state,
                     onEvent = viewModel::onEvent,
-                    onImportFile = { filePickerLauncher.launch("text/*") }
+                    onImportFile = { filePickerLauncher.launch("text/*") },
                 )
             }
         }

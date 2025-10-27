@@ -51,11 +51,6 @@ fun ChatsContent(
                     )
                 } else {
                     Box {
-                        CreateFab(
-                            onClick = onCreateChat,
-                            modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp)
-                        )
-
                         Column(
                             verticalArrangement = Arrangement.Top,
                             horizontalAlignment = Alignment.CenterHorizontally
@@ -74,6 +69,11 @@ fun ChatsContent(
                                 onDelete = onDelete
                             )
                         }
+
+                        CreateFab(
+                            onClick = onCreateChat,
+                            modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp)
+                        )
                     }
                 }
             }

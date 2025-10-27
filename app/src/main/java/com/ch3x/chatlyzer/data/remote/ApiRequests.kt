@@ -104,7 +104,7 @@ data class AnalysisDeleteRequest(
 data class PrivacyAnalysisPostRequest(
     val title: String,
     val isGhostMode: Boolean,
-    val messages: String
+    val messages: List<Message>
 ) {
     data class Message(
         val sender: String,

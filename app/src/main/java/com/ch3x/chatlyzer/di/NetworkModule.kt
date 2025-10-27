@@ -6,6 +6,7 @@ import com.ch3x.chatlyzer.data.remote.api.AuthApi
 import com.ch3x.chatlyzer.data.remote.api.CreditApi
 import com.ch3x.chatlyzer.data.remote.api.FileApi
 import com.ch3x.chatlyzer.data.remote.api.MessageApi
+import com.ch3x.chatlyzer.data.remote.api.PrivacyAnalysisApi
 import com.ch3x.chatlyzer.data.remote.api.SubscriptionApi
 import com.ch3x.chatlyzer.data.remote.api.UserApi
 import com.ch3x.chatlyzer.data.remote.interceptor.DynamicJwtInterceptor
@@ -102,6 +103,12 @@ object NetworkModule {
     @Singleton
     fun provideAnalysisApi(@Named("analysis") retrofit: Retrofit): AnalysisApi {
         return retrofit.create(AnalysisApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun providePrivacyAnalysisApi(@Named("analysis") retrofit: Retrofit): PrivacyAnalysisApi {
+        return retrofit.create(PrivacyAnalysisApi::class.java)
     }
 
     @Provides

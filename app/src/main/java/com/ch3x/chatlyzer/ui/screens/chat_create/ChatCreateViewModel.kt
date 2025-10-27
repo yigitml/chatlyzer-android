@@ -25,11 +25,15 @@ import java.util.Date
 import java.util.UUID
 import javax.inject.Inject
 import androidx.core.net.toUri
+import com.ch3x.chatlyzer.data.remote.AnalysisType
+import com.ch3x.chatlyzer.data.remote.PrivacyAnalysisPostRequest
+import com.ch3x.chatlyzer.domain.use_case.CreatePrivacyAnalysisUseCase
 
 @HiltViewModel
 class ChatCreateViewModel @Inject constructor(
     private val createChatUseCase: CreateChatUseCase,
     private val sharedDataRepository: SharedDataRepository,
+    private val createPrivacyAnalysisUseCase: CreatePrivacyAnalysisUseCase,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -59,6 +63,7 @@ class ChatCreateViewModel @Inject constructor(
             is ChatCreateEvent.ImportFile -> importFile(event.fileUri)
             is ChatCreateEvent.SelectPlatform -> selectPlatform(event.platform)
             is ChatCreateEvent.ConfirmPlatformSelection -> confirmPlatformSelection(event.platform)
+            is ChatCreateEvent.ChangeAnalysisType -> changeAnalysisType(analysisType = event.analysisType)
             is ChatCreateEvent.CreateChat -> createChat()
             is ChatCreateEvent.ClearError -> clearError()
             is ChatCreateEvent.ClearImportedData -> clearImportedData()
@@ -224,6 +229,12 @@ class ChatCreateViewModel @Inject constructor(
         }
     }
 
+    private fun changeAnalysisType(analysisType: com.ch3x.chatlyzer.ui.screens.chat_create.AnalysisType) {
+        _state.value = _state.value.copy(
+            analysisType = analysisType
+        )
+    }
+
     private fun showPlatformSelector() {
         _state.value = _state.value.copy(showPlatformSelector = true)
     }
@@ -249,7 +260,62 @@ class ChatCreateViewModel @Inject constructor(
     }
 
     private fun createChat() {
-        if (_state.value.title.isBlank()) {
+        val analysisType: com.ch3x.chatlyzer.ui.screens.chat_create.AnalysisType = _state.value.analysisType
+
+        when (analysisType) {
+            com.ch3x.chatlyzer.ui.screens.chat_create.AnalysisType.NORMAL -> {
+                viewModelScope.launch {
+                    _state.value = _state.value.copy(isCreating = true, errorMessage = "")
+
+                    try {
+                        createChatUseCase(
+                            ChatPostRequest(
+                                title = _state.value.title,
+                                messages = _state.value.messages.map { it.toDto() }
+                            )
+                        ).collect { result ->
+                            when (result) {
+                                is Resource.Success -> {
+                                    _state.value = _state.value.copy(
+                                        isCreating = false,
+                                        createdChatId = result.data.id
+                                    )
+                                }
+
+                                is Resource.Error -> {
+                                    _state.value = _state.value.copy(
+                                        isCreating = false,
+                                        errorMessage = result.message
+                                    )
+                                }
+
+                                is Resource.Loading -> {
+                                    _state.value = _state.value.copy(
+                                        isCreating = true
+                                    )
+                                }
+                            }
+                        }
+
+
+                    } catch (e: Exception) {
+                        _state.value = _state.value.copy(
+                            isCreating = false,
+                            errorMessage = "An unexpected error occurred: ${e.message}"
+                        )
+                    }
+                }
+            }
+            else -> {
+                createPrivacyAnalysis()
+            }
+        }
+    }
+
+    private fun createPrivacyAnalysis() {
+        val isGhostMode = _state.value.analysisType == com.ch3x.chatlyzer.ui.screens.chat_create.AnalysisType.GHOST
+
+        if(_state.value.title.isBlank()) {
             _state.value = _state.value.copy(errorMessage = "Please enter a chat title")
             return
         }
@@ -258,18 +324,30 @@ class ChatCreateViewModel @Inject constructor(
             _state.value = _state.value.copy(isCreating = true, errorMessage = "")
 
             try {
-                createChatUseCase(
-                    ChatPostRequest(
+                createPrivacyAnalysisUseCase(
+                    PrivacyAnalysisPostRequest(
                         title = _state.value.title,
-                        messages = _state.value.messages.map { it.toDto() }
+                        isGhostMode = isGhostMode,
+                        messages = _state.value.messages.map {
+                            PrivacyAnalysisPostRequest.Message(
+                                it.sender,
+                                it.timestamp,
+                                it.content,
+                                it.metadata
+                            )
+                        }
                     )
                 ).collect { result ->
                     when (result) {
                         is Resource.Success -> {
-                            _state.value = _state.value.copy(
-                                isCreating = false,
-                                createdChatId = result.data.id.toString()
-                            )
+                            if (isGhostMode) {
+                                _state.value = _state.value.copy()
+                            } else {
+                                _state.value = _state.value.copy(
+                                    isCreating = false,
+                                    createdChatId = result.data[0].chatId
+                                )
+                            }
                         }
 
                         is Resource.Error -> {
@@ -286,8 +364,6 @@ class ChatCreateViewModel @Inject constructor(
                         }
                     }
                 }
-
-
             } catch (e: Exception) {
                 _state.value = _state.value.copy(
                     isCreating = false,

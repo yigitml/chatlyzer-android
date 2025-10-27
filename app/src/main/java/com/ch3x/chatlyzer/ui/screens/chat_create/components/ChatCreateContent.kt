@@ -7,6 +7,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.ch3x.chatlyzer.domain.model.Analysis
+import com.ch3x.chatlyzer.ui.screens.chat_create.AnalysisType
 import com.ch3x.chatlyzer.ui.screens.chat_create.ChatCreateEvent
 import com.ch3x.chatlyzer.ui.screens.chat_create.ChatCreateState
 
@@ -23,14 +25,12 @@ fun ChatCreateContent(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Import progress section
         if (state.isImporting) {
             item {
                 ImportProgressSection(progress = state.importProgress)
             }
         }
 
-        // Imported file info section
         state.importedFileInfo?.let { fileInfo ->
             item {
                 ImportedFileInfoSection(
@@ -41,7 +41,10 @@ fun ChatCreateContent(
             }
         }
 
-        // Chat title section
+        item {
+            AnalysisTypeSelector(state.analysisType, onEvent)
+        }
+
         item {
             ChatTitleSection(
                 title = state.title,
@@ -49,7 +52,6 @@ fun ChatCreateContent(
             )
         }
 
-        // Messages section
         item {
             MessagesSection(
                 messages = state.messages,

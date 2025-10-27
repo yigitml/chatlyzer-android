@@ -13,6 +13,7 @@ sealed class ChatCreateEvent {
     data class ImportFile(val fileUri: Uri) : ChatCreateEvent()
     data class SelectPlatform(val platform: ChatPlatform) : ChatCreateEvent()
     data class ConfirmPlatformSelection(val platform: ChatPlatform) : ChatCreateEvent()
+    data class ChangeAnalysisType(val analysisType: AnalysisType) : ChatCreateEvent()
     object CreateChat : ChatCreateEvent()
     object ClearError : ChatCreateEvent()
     object ClearImportedData : ChatCreateEvent()

@@ -1,5 +1,6 @@
 package com.ch3x.chatlyzer.domain.use_case
 
+import com.ch3x.chatlyzer.data.mapper.toDomain
 import com.ch3x.chatlyzer.data.remote.PrivacyAnalysisPostRequest
 import com.ch3x.chatlyzer.data.remote.parseRetrofitError
 import com.ch3x.chatlyzer.domain.model.Analysis
@@ -17,7 +18,7 @@ class CreatePrivacyAnalysisUseCase @Inject constructor(
     try {
       emit(Resource.Loading())
       val result = privacyAnalysisRepository.createPrivacyAnalysis(privacyAnalysisPostRequest)
-      emit(Resource.Success(result))
+      emit(Resource.Success(result.analyzes.map { it.toDomain() }))
     } catch (e: HttpException) {
       emit(Resource.Error(parseRetrofitError(e)))
     } catch (e: Exception) {
