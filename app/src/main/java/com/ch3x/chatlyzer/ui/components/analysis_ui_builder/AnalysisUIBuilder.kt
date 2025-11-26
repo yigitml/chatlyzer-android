@@ -82,24 +82,29 @@ class AnalysisUIBuilder {
 
     @Composable
     private fun AnalysisHeader(analysisType: AnalysisType) {
-        Card(
+        com.ch3x.chatlyzer.ui.components.GlassCard(
             modifier = Modifier.fillMaxWidth(),
         ) {
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
+                    .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = analysisType.emoji,
-                    style = MaterialTheme.typography.headlineMedium
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
                     text = analysisType.displayName,
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold
+                    style = androidx.compose.ui.text.TextStyle(
+                        brush = androidx.compose.ui.graphics.Brush.linearGradient(
+                            com.ch3x.chatlyzer.ui.theme.PrimaryGradientColors
+                        ),
+                        fontSize = MaterialTheme.typography.headlineSmall.fontSize,
+                        fontWeight = FontWeight.Bold
+                    )
                 )
             }
         }

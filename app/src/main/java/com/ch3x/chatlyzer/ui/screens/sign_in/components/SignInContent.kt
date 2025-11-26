@@ -1,11 +1,15 @@
 package com.ch3x.chatlyzer.ui.screens.sign_in.components
 
+import SignInContainer
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
@@ -44,9 +48,15 @@ fun SignInContent(
         modifier = modifier
             .fillMaxSize()
             .padding(16.dp)
+            .imePadding() // Handle keyboard
     ) {
+        val scrollState = rememberScrollState()
+
         Column(
-            modifier = Modifier.align(Alignment.Center).fillMaxSize(),
+            modifier = Modifier
+                .align(Alignment.Center)
+                .fillMaxSize()
+                .verticalScroll(scrollState), // Make scrollable
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -55,11 +65,11 @@ fun SignInContent(
                 loginState = loginState,
                 onEvent = onEvent
             )
-
-            LoadingOverlay(
-                isVisible = loginState is SignInState.Loading,
-            )
         }
+
+        LoadingOverlay(
+            isVisible = loginState is SignInState.Loading,
+        )
 
         SnackbarHost(
             hostState = snackbarHostState,

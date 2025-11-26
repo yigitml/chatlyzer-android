@@ -19,9 +19,14 @@ fun IntroHeader(modifier: Modifier = Modifier) {
 
     Text(
         text = "Uncover Hidden Patterns in Your Conversations.",
-        fontSize = 32.sp,
-        fontWeight = FontWeight.Bold,
-        textAlign = TextAlign.Center,
+        style = androidx.compose.ui.text.TextStyle(
+            brush = androidx.compose.ui.graphics.Brush.linearGradient(
+                com.ch3x.chatlyzer.ui.theme.PrimaryGradientColors
+            ),
+            fontSize = 32.sp,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center
+        ),
         modifier = modifier
     )
 } 

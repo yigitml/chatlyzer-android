@@ -1,5 +1,6 @@
 package com.ch3x.chatlyzer.di
 
+import android.content.Context
 import com.ch3x.chatlyzer.data.local.database.dao.AnalysisDao
 import com.ch3x.chatlyzer.data.local.database.dao.ChatDao
 import com.ch3x.chatlyzer.data.local.database.dao.CreditDao
@@ -40,6 +41,7 @@ import com.ch3x.chatlyzer.domain.repository.UserRepository
 import dagger.Provides
 import dagger.Module
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -120,4 +122,10 @@ object RepositoryModule {
     fun providesAppPreferencesRepository(
         preferencesManager: PreferencesManager
     ) : AppPreferencesRepository = AppPreferencesRepositoryImpl(preferencesManager)
+
+    @Provides
+    @Singleton
+    fun providesLocalFileRepository(
+        @ApplicationContext context: Context
+    ): com.ch3x.chatlyzer.domain.repository.LocalFileRepository = com.ch3x.chatlyzer.data.repository.LocalFileRepositoryImpl(context)
 } 

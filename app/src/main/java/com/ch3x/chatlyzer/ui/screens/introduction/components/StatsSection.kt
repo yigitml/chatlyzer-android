@@ -19,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ch3x.chatlyzer.R
+import com.ch3x.chatlyzer.ui.components.animations.CountUpText
 
 @Composable
 fun StatsSection(modifier: Modifier = Modifier) {
@@ -43,11 +44,14 @@ fun StatsSection(modifier: Modifier = Modifier) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.weight(3f)
             ) {
-                Text(
-                    text = "100,000+",
-                    fontSize = 32.sp,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 1
+                CountUpText(
+                    targetValue = 100000,
+                    durationMillis = 800,
+                    suffix = "+",
+                    style = MaterialTheme.typography.displayMedium.copy(
+                        fontSize = 32.sp,
+                        fontWeight = FontWeight.Bold
+                    )
                 )
                 Text(
                     text = "Chats Analyzed",

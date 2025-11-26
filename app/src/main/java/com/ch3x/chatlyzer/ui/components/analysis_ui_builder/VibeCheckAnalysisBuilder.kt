@@ -1,7 +1,7 @@
 package com.ch3x.chatlyzer.ui.components.analysis_ui_builder
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
+
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -20,70 +20,62 @@ class VibeCheckAnalysisBuilder {
         val moodDescriptors = data.getAsJsonArray("moodDescriptors")
         val messageRefs = data.getAsJsonArray("messageRefs")
         
-        LazyColumn(
+        Column(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    StatCard(
-                        modifier = Modifier.weight(1f),
-                        title = "Overall Vibe",
-                        value = overallVibe.capitalize(Locale.ROOT),
-                        icon = AnalysisUtils.getVibeEmoji(overallVibe)
-                    )
-                    StatCard(
-                        modifier = Modifier.weight(1f),
-                        title = "Humor Detected",
-                        value = if (humorDetected) "Yes" else "No",
-                        icon = if (humorDetected) "😂" else "😐"
-                    )
-                }
-            }
-
-            item {
-                ProgressStatCard(
-                    title = "Emoji Score",
-                    value = emojiScore,
-                    maxValue = 10f,
-                    subtitle = "How expressive is the conversation",
-                    icon = "😊",
-                    isPercentage = false // This is a 0-10 score
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                StatCard(
+                    modifier = Modifier.weight(1f),
+                    title = "Overall Vibe",
+                    value = overallVibe.capitalize(Locale.ROOT),
+                    icon = AnalysisUtils.getVibeEmoji(overallVibe)
+                )
+                StatCard(
+                    modifier = Modifier.weight(1f),
+                    title = "Humor Detected",
+                    value = if (humorDetected) "Yes" else "No",
+                    icon = if (humorDetected) "😂" else "😐"
                 )
             }
 
+            ProgressStatCard(
+                title = "Emoji Score",
+                value = emojiScore,
+                maxValue = 10f,
+                subtitle = "How expressive is the conversation",
+                icon = "😊",
+                isPercentage = false // This is a 0-10 score
+            )
+
             keywords?.let { keywordsArray ->
-                item {
-                    val keywordsList = mutableListOf<String>()
-                    for (i in 0 until keywordsArray.size()) {
-                        keywordsList.add(keywordsArray[i].asString)
-                    }
-                    ListStatCard(
-                        title = "Keywords",
-                        items = keywordsList,
-                        icon = "🔑"
-                    )
+                val keywordsList = mutableListOf<String>()
+                for (i in 0 until keywordsArray.size()) {
+                    keywordsList.add(keywordsArray[i].asString)
                 }
+                ListStatCard(
+                    title = "Keywords",
+                    items = keywordsList,
+                    icon = "🔑"
+                )
             }
 
             moodDescriptors?.let { moodArray ->
-                item {
-                    val moodList = mutableListOf<String>()
-                    for (i in 0 until moodArray.size()) {
-                        moodList.add(moodArray[i].asString)
-                    }
-                    ListStatCard(
-                        title = "Mood Descriptors",
-                        items = moodList,
-                        icon = "🎭"
-                    )
+                val moodList = mutableListOf<String>()
+                for (i in 0 until moodArray.size()) {
+                    moodList.add(moodArray[i].asString)
                 }
+                ListStatCard(
+                    title = "Mood Descriptors",
+                    items = moodList,
+                    icon = "🎭"
+                )
             }
 
             messageRefs?.let { refs ->
-                items(refs.size().coerceAtMost(3)) { index ->
+                repeat(refs.size().coerceAtMost(3)) { index ->
                     val ref = refs[index].asJsonObject
                     MessageRefCard(
                         sender = if (ref.get("sender")?.asString == "user") "You" else "Other",

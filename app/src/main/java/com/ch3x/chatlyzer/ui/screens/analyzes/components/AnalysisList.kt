@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.ch3x.chatlyzer.domain.model.Analysis
+import com.ch3x.chatlyzer.ui.components.animations.AnimatedListItem
 
 @Composable
 fun AnalysisList(
@@ -31,13 +32,20 @@ fun AnalysisList(
                     text = "All Analyses",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             }
         }
         
         items(analyses) { analysis ->
-            AnalysisItem(analysis, onAnalysisClick)
+            val index = analyses.indexOf(analysis)
+            AnimatedListItem(
+                index = index,
+                staggerDelay = 50
+            ) {
+                AnalysisItem(analysis, onAnalysisClick)
+            }
         }
     }
 } 

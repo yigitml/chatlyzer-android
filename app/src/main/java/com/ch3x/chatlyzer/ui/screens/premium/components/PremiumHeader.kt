@@ -15,6 +15,7 @@ fun PremiumHeader(modifier: Modifier = Modifier) {
         fontSize = 32.sp,
         fontWeight = FontWeight.Bold,
         textAlign = TextAlign.Center,
-        modifier = modifier
+        modifier = modifier,
+        color = androidx.compose.material3.MaterialTheme.colorScheme.onBackground
     )
 } 

@@ -29,6 +29,21 @@ fun AnalyzesScreen(
         }
     }
 
+    // Auto-analyze and navigation logic
+    LaunchedEffect(state.analyzes, state.screenState) {
+        if (chatId != null && state.screenState == com.ch3x.chatlyzer.ui.screens.ScreenState.Success) {
+            if (state.analyzes.isEmpty() && !state.isAnalysisInProgress) {
+                // No analysis exists, create one automatically
+                viewModel.onEvent(AnalyzesEvent.AnalyzeChat(chatId))
+            } else if (state.analyzes.size == 1) {
+                // Exactly one analysis, navigate to it directly
+                // We might want to add a flag to only do this on first load or creation
+                // For now, this simplifies the flow as requested
+                onNavigateToAnalysisDetail(state.analyzes.first().id)
+            }
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()

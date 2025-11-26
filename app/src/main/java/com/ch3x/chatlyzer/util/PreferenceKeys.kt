@@ -34,4 +34,7 @@ object PreferenceKeys {
 
     val CACHE_EXPIRY = longPreferencesKey("cache_expiry")
     val LAST_CACHE_CLEAR = longPreferencesKey("last_cache_clear")
+
+    val PENDING_SHARED_FILE_URI = stringPreferencesKey("pending_shared_file_uri")
+    val PENDING_SHARED_FILE_TYPE = stringPreferencesKey("pending_shared_file_type")
 }

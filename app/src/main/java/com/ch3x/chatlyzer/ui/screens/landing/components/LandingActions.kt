@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.ch3x.chatlyzer.ui.components.PrimaryButton
+import com.ch3x.chatlyzer.ui.components.GradientButton
 
 @Composable
 fun LandingActions(
@@ -18,7 +18,7 @@ fun LandingActions(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        PrimaryButton(
+        GradientButton(
             text = "Analyze My Chats",
             onClick = onNavigateToIntroduction
         )

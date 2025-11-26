@@ -4,7 +4,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Chat
@@ -24,6 +26,14 @@ import com.ch3x.chatlyzer.ui.components.LoadingState
 import com.ch3x.chatlyzer.ui.screens.ScreenState
 import com.ch3x.chatlyzer.ui.screens.chats.ChatsState
 
+import androidx.compose.foundation.background
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.graphics.Brush
+import com.ch3x.chatlyzer.ui.theme.BackgroundDark
+import com.ch3x.chatlyzer.ui.theme.SurfaceDark
+import com.ch3x.chatlyzer.ui.components.animations.AnimatedEmptyState
+import com.ch3x.chatlyzer.ui.components.GradientButton
+
 @Composable
 fun ChatsContent(
     state: ChatsState,
@@ -33,7 +43,9 @@ fun ChatsContent(
     modifier: Modifier = Modifier
 ) {
     Box(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
     ) {
         when (state.screenState) {
             ScreenState.Loading -> {
@@ -42,13 +54,22 @@ fun ChatsContent(
 
             ScreenState.Success -> {
                 if (state.chats.isEmpty()) {
-                    EmptyState(
-                        title = "No chats yet",
-                        subtitle = "Import your first WhatsApp chat to get started with analysis",
-                        icon = Icons.AutoMirrored.Outlined.Chat,
-                        buttonText = "Add Chat",
-                        onButtonClick = onCreateChat
-                    )
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        AnimatedEmptyState(
+                            title = "No analyses yet",
+                            subtitle = "Import a chat to start analyzing your conversations",
+                            emoji = "💬"
+                        )
+                        Spacer(modifier = Modifier.height(24.dp))
+                        GradientButton(
+                            text = "Analyze New Chat",
+                            onClick = onCreateChat
+                        )
+                    }
                 } else {
                     Box {
                         Column(
@@ -56,14 +77,14 @@ fun ChatsContent(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                "Your Chats",
+                                "Your Analyses",
                                 Modifier.padding(bottom = 8.dp, top = 16.dp),
                                 fontWeight = FontWeight.Normal,
                                 fontSize = 22.sp
                             )
 
                             ChatList(
-                                modifier = Modifier.padding(),
+                                modifier = Modifier.padding().weight(1f),
                                 chats = state.chats,
                                 onChatClick = onNavigateAnalysis,
                                 onDelete = onDelete

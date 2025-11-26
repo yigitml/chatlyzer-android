@@ -12,19 +12,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.ch3x.chatlyzer.domain.model.Chat
 
+import androidx.compose.foundation.lazy.itemsIndexed
+
 @Composable
 fun ChatList(
     chats: List<Chat>,
     onChatClick: (String) -> Unit,
-    onDelete: (String) -> Unit,
+    onDelete: (String) ->  Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
     ) {
-        items(chats) { chat ->
+        itemsIndexed(chats) { index, chat ->
             ChatItem(
                 chat = chat,
+                index = index,
                 onChatClick = onChatClick,
                 onDelete = onDelete
             )

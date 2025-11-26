@@ -47,6 +47,7 @@ object AnalysisTypeUtils {
             "simp_o_meter" -> "SimpOMeter"
             "ghost_risk" -> "Ghost Risk"
             "main_character_energy" -> "Main Character Energy"
+            "emotional_depth" -> "Emotional Depth"
             else -> type.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
         }
     }

@@ -73,8 +73,8 @@ class AppPreferencesRepositoryImpl @Inject constructor(
         preferencesManager.getPreference(PreferenceKeys.LAST_SYNC_TIME, 0L)
 
     override suspend fun incrementAppLaunchCount() {
-        getAppLaunchCount().first().let { count ->
-            preferencesManager.savePreference(PreferenceKeys.APP_LAUNCH_COUNT, count + 1)
+        preferencesManager.updatePreference(PreferenceKeys.APP_LAUNCH_COUNT, 0) { count ->
+            count + 1
         }
     }
 

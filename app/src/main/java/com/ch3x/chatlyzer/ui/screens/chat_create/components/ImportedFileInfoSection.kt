@@ -21,12 +21,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.ch3x.chatlyzer.ui.screens.chat_create.ImportedFileInfo
 import com.ch3x.chatlyzer.util.FileUtils
+import com.ch3x.chatlyzer.ui.components.animations.PopIcon
 
 @Composable
 fun ImportedFileInfoSection(
@@ -35,16 +38,10 @@ fun ImportedFileInfoSection(
     onChangePlatform: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
-        )
+    com.ch3x.chatlyzer.ui.components.GlassCard(
+        modifier = modifier.fillMaxWidth()
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
+        Column {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -54,10 +51,14 @@ fun ImportedFileInfoSection(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Icon(
-                        Icons.Default.CheckCircle,
-                        contentDescription = null,
-                    )
+                    val popTrigger = remember { mutableStateOf(true) }
+                    PopIcon(trigger = popTrigger.value) {
+                        Icon(
+                            Icons.Default.CheckCircle,
+                            contentDescription = null,
+                            tint = com.ch3x.chatlyzer.ui.theme.SuccessGreen
+                        )
+                    }
                     Text(
                         text = "File Imported",
                         style = MaterialTheme.typography.titleMedium,
@@ -66,7 +67,10 @@ fun ImportedFileInfoSection(
                 }
                 
                 IconButton(onClick = onClearImport) {
-                    Icon(Icons.Default.Close, contentDescription = "Clear Import")
+                    Icon(
+                        Icons.Default.Close, 
+                        contentDescription = "Clear Import"
+                    )
                 }
             }
             
@@ -100,6 +104,7 @@ private fun InfoRow(label: String, value: String) {
         Text(
             text = label,
             style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Text(
             text = value,

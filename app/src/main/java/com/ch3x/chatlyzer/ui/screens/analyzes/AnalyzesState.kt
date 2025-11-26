@@ -10,5 +10,6 @@ data class AnalyzesState(
     val screenState: ScreenState = ScreenState.Loading,
     val chat: Chat? = null,
     val analyzes: List<Analysis> = emptyList(),
-    val errorMessage: String = ""
+    val errorMessage: String = "",
+    val isAnalysisInProgress: Boolean = false
 )

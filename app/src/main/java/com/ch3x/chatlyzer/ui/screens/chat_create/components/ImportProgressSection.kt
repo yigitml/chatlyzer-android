@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -19,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.ch3x.chatlyzer.ui.components.animations.LoadingDots
 
 @Composable
 fun ImportProgressSection(
@@ -36,10 +36,8 @@ fun ImportProgressSection(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                CircularProgressIndicator(
-                    progress = progress,
-                    modifier = Modifier.size(24.dp),
-                    strokeWidth = 3.dp
+                LoadingDots(
+                    modifier = Modifier.size(24.dp)
                 )
                 Text(
                     text = "Importing chat...",

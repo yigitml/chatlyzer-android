@@ -25,6 +25,7 @@ interface PreferencesManager {
     fun isUserLoggedIn(): Flow<Boolean>
     suspend fun clearAuthData()
     suspend fun clearAllPreferences()
+    suspend fun <T> updatePreference(key: Preferences.Key<T>, defaultValue: T, transform: (T) -> T)
 }
 
 class PreferencesManagerImpl @Inject constructor(
@@ -34,6 +35,13 @@ class PreferencesManagerImpl @Inject constructor(
     override suspend fun <T> savePreference(key: Preferences.Key<T>, value: T) {
         context.dataStore.edit { preferences ->
             preferences[key] = value
+        }
+    }
+
+    override suspend fun <T> updatePreference(key: Preferences.Key<T>, defaultValue: T, transform: (T) -> T) {
+        context.dataStore.edit { preferences ->
+            val current = preferences[key] ?: defaultValue
+            preferences[key] = transform(current)
         }
     }
 

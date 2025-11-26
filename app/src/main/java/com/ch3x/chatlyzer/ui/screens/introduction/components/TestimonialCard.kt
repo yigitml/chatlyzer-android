@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,13 +33,11 @@ fun TestimonialCard(
     testimonial: Testimonial,
     modifier: Modifier = Modifier
 ) {
-    Card(
+    com.ch3x.chatlyzer.ui.components.GlassCard(
         modifier = modifier
             .fillMaxWidth()
             .height(192.dp) // Fixed height for all cards
-            .padding(horizontal = 8.dp),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors()
+            .padding(horizontal = 8.dp)
     ) {
         Column(
             modifier = Modifier
@@ -87,7 +86,8 @@ private fun TestimonialHeader(
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                color = MaterialTheme.colorScheme.onBackground
             )
 
             // Rating below name to prevent overflow
@@ -107,6 +107,7 @@ private fun TestimonialContent(
         lineHeight = 24.sp,
         maxLines = 6,
         overflow = TextOverflow.Ellipsis,
-        modifier = modifier
+        modifier = modifier,
+        color = com.ch3x.chatlyzer.ui.theme.TextGray
     )
 } 

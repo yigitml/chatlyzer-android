@@ -1,37 +1,69 @@
 package com.ch3x.chatlyzer.ui.theme
 
-import android.os.Build
+import android.app.Activity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalView
+import androidx.core.view.WindowCompat
 
-val LightColorScheme = lightColorScheme(
-    primary = Pink
+private val DarkColorScheme = darkColorScheme(
+    primary = PrimaryPink,
+    onPrimary = TextWhite,
+    secondary = PrimaryPurple,
+    onSecondary = TextWhite,
+    tertiary = SecondaryOrange,
+    background = BackgroundDark,
+    onBackground = TextWhite,
+    surface = SurfaceDark,
+    onSurface = TextWhite,
+    surfaceVariant = SurfaceLight,
+    onSurfaceVariant = TextGray,
+    error = ErrorRed
 )
-val DarkColorScheme = darkColorScheme(
-    primary = Pink
+
+// For now, we want to enforce the dark/premium look even in light mode, 
+// or provide a very specific light mode. Let's make Light mode a slightly lighter version 
+// but still keeping the brand identity.
+private val LightColorScheme = lightColorScheme(
+    primary = PrimaryPink,
+    onPrimary = Color.White,
+    secondary = PrimaryPurple,
+    onSecondary = Color.White,
+    tertiary = SecondaryOrange,
+    background = Color(0xFFF5F5F7), // Light gray background
+    onBackground = Color(0xFF121212),
+    surface = Color.White,
+    onSurface = Color(0xFF121212),
+    surfaceVariant = Color(0xFFE0E0E0),
+    onSurfaceVariant = Color(0xFF757575),
+    error = ErrorRed
 )
 
 @Composable
 fun ChatlyzerTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-   
+    // Dynamic color is disabled to maintain the premium brand look
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
+    }
+
+    val view = LocalView.current
+    if (!view.isInEditMode) {
+        SideEffect {
+            val window = (view.context as Activity).window
+            window.statusBarColor = colorScheme.background.toArgb()
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
+        }
     }
 
     MaterialTheme(

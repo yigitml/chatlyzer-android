@@ -21,14 +21,13 @@ fun UserComparisonCard(
     user2Value: String,
     icon: String
 ) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(30.dp),
+    com.ch3x.chatlyzer.ui.components.GlassCard(
+        modifier = Modifier.fillMaxWidth()
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(20.dp),
+                .padding(com.ch3x.chatlyzer.ui.components.analysis_ui_builder.AnalysisLayoutDirectives.CARD_PADDING),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(
@@ -42,7 +41,8 @@ fun UserComparisonCard(
                 Text(
                     text = title,
                     fontSize = 18.sp,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             }
             
@@ -60,12 +60,14 @@ fun UserComparisonCard(
                         text = user1Name,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
+                        color = com.ch3x.chatlyzer.ui.theme.TextGray
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = user1Value,
                         fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 }
                 
@@ -73,7 +75,8 @@ fun UserComparisonCard(
                     text = "VS",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(horizontal = 16.dp)
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    color = com.ch3x.chatlyzer.ui.theme.PrimaryPink
                 )
                 
                 Column(
@@ -84,12 +87,14 @@ fun UserComparisonCard(
                         text = user2Name,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
+                        color = com.ch3x.chatlyzer.ui.theme.TextGray
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = user2Value,
                         fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 }
             }

@@ -11,6 +11,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+
 @Composable
 fun TutorialStepDisplay(
     step: TutorialStep,
@@ -20,30 +24,44 @@ fun TutorialStepDisplay(
     onNavigatePlatformSelection: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
+    BoxWithConstraints(
+        modifier = modifier.fillMaxSize()
     ) {
-        Spacer(modifier = Modifier.height(32.dp))
+        val screenHeight = maxHeight
+        val isCompact = screenHeight < 600.dp
+        val scrollState = rememberScrollState()
 
-        TutorialStepHeader(stepName = step.name)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(scrollState)
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = if (isCompact) Arrangement.Top else Arrangement.SpaceBetween
+        ) {
+            val topSpacerHeight = if (isCompact) 16.dp else 32.dp
+            
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Spacer(modifier = Modifier.height(topSpacerHeight))
+                TutorialStepHeader(stepName = step.name)
+                Spacer(modifier = Modifier.height(if (isCompact) 24.dp else 48.dp))
+                TutorialStepImage(imageRes = step.imageRes)
+            }
 
-        Spacer(modifier = Modifier.height(48.dp))
+            if (!isCompact) {
+                Spacer(modifier = Modifier.weight(1f))
+            } else {
+                Spacer(modifier = Modifier.height(32.dp))
+            }
 
-        TutorialStepImage(imageRes = step.imageRes)
+            TutorialActions(
+                isLastStep = isLastStep,
+                onNextStep = onNextStep,
+                onNavigateAnalysis = onNavigateAnalysis,
+                onNavigatePlatformSelection = onNavigatePlatformSelection
+            )
 
-        Spacer(modifier = Modifier.weight(1f))
-
-        TutorialActions(
-            isLastStep = isLastStep,
-            onNextStep = onNextStep,
-            onNavigateAnalysis = onNavigateAnalysis,
-            onNavigatePlatformSelection = onNavigatePlatformSelection
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
+        }
     }
 } 

@@ -2,35 +2,27 @@ package com.ch3x.chatlyzer
 
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
-import android.provider.LiveFolders.INTENT
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.Modifier
-import com.ch3x.chatlyzer.data.repository.AppPreferencesRepositoryImpl
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import com.ch3x.chatlyzer.data.repository.SharedDataRepository
 import com.ch3x.chatlyzer.domain.repository.AppPreferencesRepository
 import com.ch3x.chatlyzer.ui.navigation.AppNavigation
 import com.ch3x.chatlyzer.ui.navigation.Screen
-import com.ch3x.chatlyzer.ui.screens.chats.ChatsScreen
 import com.ch3x.chatlyzer.ui.theme.ChatlyzerTheme
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.launchIn
 import javax.inject.Inject
-import androidx.compose.runtime.getValue
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.ch3x.chatlyzer.ui.screens.landing.LandingScreen
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -51,30 +43,39 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                 ) {
-                    val launchCount = preferencesRepositoryImpl.getAppLaunchCount()
-                        .collectAsStateWithLifecycle(initialValue = 0)
+                    // Determine start destination once to avoid race conditions
+                    val startDestinationState = produceState<String?>(initialValue = null) {
+                        val launchCount = preferencesRepositoryImpl.getAppLaunchCount().first()
+                        val onBoardingCompleted = preferencesRepositoryImpl.isOnboardingCompleted().first()
+                        val hasPendingSharedFile = sharedDataRepository.hasPendingSharedFile()
+                        val isUserLoggedIn = preferencesRepositoryImpl.isUserLoggedIn().first()
 
-                    val onBoardingCompleted = preferencesRepositoryImpl.isOnboardingCompleted()
-                        .collectAsStateWithLifecycle(initialValue = false)
+                        value = when {
+                            !isUserLoggedIn -> Screen.SignIn.route // Force sign-in if not logged in
+                            hasPendingSharedFile -> Screen.ChatCreate.route
+                            launchCount == 0 -> Screen.Introduction.route // Or Landing, depending on preference
+                            // !onBoardingCompleted -> Screen.PlatformSelection.route // Removed as per plan
+                            else -> Screen.Chats.route
+                        }
 
-                    LaunchedEffect(Unit) {
+                        // Increment launch count after determining destination
                         preferencesRepositoryImpl.incrementAppLaunchCount()
                     }
 
-                    // Determine start destination based on app state
-                    val startDestination = when {
-                        sharedDataRepository.hasPendingSharedFile() -> Screen.ChatCreate.route
-                        launchCount.value == 0 -> Screen.Landing.route
-                        !onBoardingCompleted.value -> Screen.PlatformSelection.route
-                        else -> Screen.Chats.route
-                    }
+                    if (startDestinationState.value != null) {
+                        val launchCount = preferencesRepositoryImpl.getAppLaunchCount()
+                            .collectAsStateWithLifecycle(initialValue = 0)
 
-                    AppNavigation(
-                        context = this@MainActivity,
-                        startDestination = Screen.Chats.route, // startDestination,
-                        launchCount = launchCount.value,
-                        onBoardingCompleted = onBoardingCompleted.value
-                    )
+                        val onBoardingCompleted = preferencesRepositoryImpl.isOnboardingCompleted()
+                            .collectAsStateWithLifecycle(initialValue = false)
+
+                        AppNavigation(
+                            context = this@MainActivity,
+                            startDestination = startDestinationState.value!!,
+                            launchCount = launchCount.value,
+                            onBoardingCompleted = onBoardingCompleted.value,
+                        )
+                    }
                 }
             }
         }
@@ -86,9 +87,11 @@ class MainActivity : ComponentActivity() {
         // TODO
         // If we get a new share intent while app is running,
         // you might want to navigate to ChatCreate screen
-        if (sharedDataRepository.hasPendingSharedFile()) {
-            // You could use a callback or event bus to notify the navigation
-            // For now, we'll handle this in the ViewModel
+        lifecycleScope.launch {
+            if (sharedDataRepository.hasPendingSharedFile()) {
+                // You could use a callback or event bus to notify the navigation
+                // For now, we'll handle this in the ViewModel
+            }
         }
     }
 
@@ -100,7 +103,9 @@ class MainActivity : ComponentActivity() {
             val type = intent.type
 
             if (fileUri != null) {
-                sharedDataRepository.setSharedFile(fileUri.toString(), type ?: "")
+                lifecycleScope.launch {
+                    sharedDataRepository.setSharedFile(fileUri.toString(), type ?: "")
+                }
             }
         }
     }

@@ -63,7 +63,7 @@ fun AppNavigation(
     navController: NavHostController = rememberNavController(),
     startDestination: String = Screen.SignIn.route,
     launchCount: Int = 0,
-    onBoardingCompleted: Boolean = false
+    onBoardingCompleted: Boolean = false,
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -116,8 +116,8 @@ fun AppNavigation(
 
             composable(Screen.SignIn.route) {
                 SignInScreen(context = context) {
-                    val destination = if (onBoardingCompleted) Screen.Chats.route else Screen.PlatformSelection.route
-                    navController.navigate(destination) {
+                    // Always navigate to Chats (Home) after sign in
+                    navController.navigate(Screen.Chats.route) {
                         popUpTo(Screen.SignIn.route) { inclusive = true }
                     }
                 }
@@ -133,7 +133,7 @@ fun AppNavigation(
                 Screen.Tutorial.route, arguments = listOf(
                     navArgument(
                         "platform",
-                        builder = { type = PlatformType }
+                        builder = { type = NavType.StringType }
                     ))) { backStackEntry ->
                 val platformString = backStackEntry.arguments?.getString("platform")
                 val platform = try {
@@ -171,8 +171,13 @@ fun AppNavigation(
             composable(
                 Screen.ChatCreate.route
             ) {
-                ChatCreateScreen {
-                    navController.navigate(Screen.Analyzes.createRoute(it)) {
+                ChatCreateScreen { chatId ->
+                    // Navigate directly to AnalysisDetail after creation, skipping Analyzes list
+                    // We need to fetch the analysis ID first, but for now let's assume we can get it
+                    // Or we navigate to Analyzes list if we can't get the specific analysis ID yet
+                    // Ideally, ChatCreate should return the analysis ID or we fetch it here.
+                    // For now, let's keep it as is but change the popUpTo
+                     navController.navigate(Screen.Analyzes.createRoute(chatId)) {
                         popUpTo(Screen.Chats.route) { inclusive = false }
                     }
                 }

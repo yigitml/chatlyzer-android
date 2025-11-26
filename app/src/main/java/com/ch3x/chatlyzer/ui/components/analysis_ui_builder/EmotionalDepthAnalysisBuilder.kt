@@ -1,7 +1,7 @@
 package com.ch3x.chatlyzer.ui.components.analysis_ui_builder
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -18,36 +18,32 @@ class EmotionalDepthAnalysisBuilder {
         val vulnerableMoments = data.getAsJsonArray("vulnerableMoments")
         val topicsTouched = data.getAsJsonArray("topicsTouched")
         
-        LazyColumn(
+        Column(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            item {
-                ProgressStatCard(
-                    title = "Emotional Depth",
-                    value = depthScore,
-                    maxValue = 10f,
-                    subtitle = AnalysisUtils.getEmotionalDepthLevel(depthScore),
-                    icon = "💙",
-                    progressColor = Color.Blue
+            ProgressStatCard(
+                title = "Emotional Depth",
+                value = depthScore,
+                maxValue = 10f,
+                subtitle = AnalysisUtils.getEmotionalDepthLevel(depthScore),
+                icon = "💙",
+                progressColor = Color.Blue
+            )
+
+            topicsTouched?.let { topicsArray ->
+                val topicsList = mutableListOf<String>()
+                for (i in 0 until topicsArray.size()) {
+                    topicsList.add(topicsArray[i].asString)
+                }
+                ListStatCard(
+                    title = "Deep Topics Discussed",
+                    items = topicsList,
+                    icon = "💭"
                 )
             }
 
-            topicsTouched?.let { topicsArray ->
-                item {
-                    val topicsList = mutableListOf<String>()
-                    for (i in 0 until topicsArray.size()) {
-                        topicsList.add(topicsArray[i].asString)
-                    }
-                    ListStatCard(
-                        title = "Deep Topics Discussed",
-                        items = topicsList,
-                        icon = "💭"
-                    )
-                }
-            }
-
             vulnerableMoments?.let { momentsArray ->
-                items(momentsArray.size()) { index ->
+                repeat(momentsArray.size()) { index ->
                     val moment = momentsArray[index].asJsonObject
                     val messageRefs = moment.getAsJsonArray("messageRefs")
                     

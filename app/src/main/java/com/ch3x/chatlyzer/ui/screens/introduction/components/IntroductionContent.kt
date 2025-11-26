@@ -12,6 +12,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+
+import androidx.compose.foundation.background
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.graphics.Brush
+import com.ch3x.chatlyzer.ui.theme.BackgroundDark
+import com.ch3x.chatlyzer.ui.theme.SurfaceDark
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun IntroductionContent(
@@ -20,10 +29,13 @@ fun IntroductionContent(
 ) {
     val testimonials = Testimonial.getSampleTestimonials()
     val pagerState = rememberPagerState(pageCount = { testimonials.size }, initialPage = 1)
+    val scrollState = rememberScrollState()
 
     Column(
         modifier = modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .verticalScroll(scrollState)
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

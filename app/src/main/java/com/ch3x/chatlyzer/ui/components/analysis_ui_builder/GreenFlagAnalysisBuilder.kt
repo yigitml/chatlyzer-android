@@ -1,13 +1,13 @@
 package com.ch3x.chatlyzer.ui.components.analysis_ui_builder
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.ch3x.chatlyzer.ui.components.stat_card.AnalysisWithExamplesCard
-import com.ch3x.chatlyzer.ui.components.analysis_ui_builder.MessageExample
 import com.ch3x.chatlyzer.ui.components.stat_card.StatCard
+import com.ch3x.chatlyzer.ui.components.analysis_ui_builder.MessageExample
 import com.google.gson.JsonObject
 
 class GreenFlagAnalysisBuilder {
@@ -16,19 +16,17 @@ class GreenFlagAnalysisBuilder {
     fun Build(data: JsonObject) {
         val traits = data.getAsJsonArray("traits")
         
-        LazyColumn(
+        Column(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            item {
-                StatCard(
-                    title = "Green Flags Found",
-                    value = traits?.size()?.toString() ?: "0",
-                    icon = "✅"
-                )
-            }
+            StatCard(
+                title = "Green Flags Found",
+                value = traits?.size()?.toString() ?: "0",
+                icon = "✅"
+            )
 
             traits?.let { traitsArray ->
-                items(traitsArray.size()) { index ->
+                repeat(traitsArray.size()) { index ->
                     val trait = traitsArray[index].asJsonObject
                     val messageRefs = trait.getAsJsonArray("messageRefs")
                     

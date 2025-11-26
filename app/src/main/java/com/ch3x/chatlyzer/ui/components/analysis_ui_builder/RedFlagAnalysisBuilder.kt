@@ -4,7 +4,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -16,27 +17,21 @@ class RedFlagAnalysisBuilder {
     fun Build(data: JsonObject) {
         val flags = data.getAsJsonArray("flags")
         
-        LazyColumn(
-            modifier = Modifier.padding(AnalysisLayoutDirectives.SCREEN_PADDING),
+        Column(
+            modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(AnalysisLayoutDirectives.SECTION_SPACING)
         ) {
-            // Header Section
-            item {
-                SectionTitle("🚩 Red Flag Analysis")
-                Spacer(modifier = Modifier.height(AnalysisLayoutDirectives.ITEM_SPACING))
-            }
+
             
-            item {
-                MetricCard(
-                    title = "Red Flags Detected",
-                    value = flags?.size()?.toString() ?: "0",
-                    icon = "🚩"
-                )
-            }
+            MetricCard(
+                title = "Red Flags Detected",
+                value = flags?.size()?.toString() ?: "0",
+                icon = "🚩"
+            )
             
             // Flags Section
             flags?.let { flagsArray ->
-                items(flagsArray.size()) { index ->
+                repeat(flagsArray.size()) { index ->
                     val flag = flagsArray[index].asJsonObject
                     
                     WarningCard(
@@ -59,4 +54,4 @@ class RedFlagAnalysisBuilder {
             }
         }
     }
-} 
+}

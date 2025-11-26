@@ -21,13 +21,10 @@ fun ChatTitleSection(
     onTitleChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp)
+    com.ch3x.chatlyzer.ui.components.GlassCard(
+        modifier = modifier.fillMaxWidth()
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
+        Column {
             Text(
                 text = "Chat Title",
                 style = MaterialTheme.typography.titleMedium,

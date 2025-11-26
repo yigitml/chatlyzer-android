@@ -30,6 +30,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.ch3x.chatlyzer.domain.model.Analysis
+import androidx.compose.runtime.*
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.ui.input.pointer.pointerInput
+import com.ch3x.chatlyzer.ui.components.animations.ScaleOnPress
 
 @Composable
 fun AnalysisItem(
@@ -38,12 +42,28 @@ fun AnalysisItem(
     modifier: Modifier = Modifier
 ) {
     val analysisType = analysis.result?.get("type") as? String ?: "Unknown"
+    var isPressed by remember { mutableStateOf(false) }
 
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clickable { onAnalysisClick(analysis.id) },
+    ScaleOnPress(
+        pressed = isPressed,
+        targetScale = 0.97f
+    ) {
+        Card(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .pointerInput(Unit) {
+                    detectTapGestures(
+                        onPress = {
+                            isPressed = true
+                            tryAwaitRelease()
+                            isPressed = false
+                        },
+                        onTap = {
+                            onAnalysisClick(analysis.id)
+                        }
+                    )
+                },
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
@@ -104,5 +124,6 @@ fun AnalysisItem(
                 }
             }
         }
+    }
     }
 } 

@@ -15,26 +15,41 @@ import com.ch3x.chatlyzer.domain.use_case.GetChatByIdUseCase
 import com.ch3x.chatlyzer.ui.screens.ScreenState
 import com.ch3x.chatlyzer.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+import androidx.lifecycle.SavedStateHandle
 
 @HiltViewModel
 class AnalyzesViewModel @Inject constructor(
     private val getAnalyzesByChatIdUseCase: GetAnalyzesByChatIdUseCase,
     private val getAllAnalyzesUseCase: GetAllAnalyzesUseCase,
     private val getChatByIdUseCase: GetChatByIdUseCase,
-    private val createAnalysisUseCase: CreateAnalysisUseCase
+    private val createAnalysisUseCase: CreateAnalysisUseCase,
+    private val savedStateHandle: SavedStateHandle
 ): ViewModel() {
 
     private val _state = mutableStateOf(AnalyzesState())
     val state: State<AnalyzesState> = _state
+
+    init {
+        val chatId = savedStateHandle.get<String>("chatId")
+        if (!chatId.isNullOrEmpty()) {
+            getAnalyzesByChatId(chatId)
+            getChatById(chatId)
+        } else {
+            getAllAnalyzes()
+        }
+    }
 
     private fun handleAnalyzesResource(resource: Resource<List<Analysis>>) {
         _state.value = when (resource) {
             is Resource.Success -> {
                 _state.value.copy(
                     screenState = ScreenState.Success,
-                    analyzes = resource.data
+                    analyzes = resource.data,
+                    isAnalysisInProgress = false
                 )
             }
 
@@ -54,26 +69,10 @@ class AnalyzesViewModel @Inject constructor(
     }
 
     private fun handleChatResource(resource: Resource<Chat>) {
-        _state.value = when (resource) {
-            is Resource.Success -> {
-                _state.value.copy(
-                    screenState = ScreenState.Success,
-                    chat = resource.data
-                )
-            }
-
-            is Resource.Error -> {
-                _state.value.copy(
-                    screenState = ScreenState.Error,
-                    errorMessage = resource.message
-                )
-            }
-
-            is Resource.Loading -> {
-                _state.value.copy(
-                    screenState = ScreenState.Loading
-                )
-            }
+        if (resource is Resource.Success) {
+            _state.value = _state.value.copy(
+                chat = resource.data
+            )
         }
     }
 
@@ -103,8 +102,40 @@ class AnalyzesViewModel @Inject constructor(
 
     private fun createAnalysis(chatId: String) {
         viewModelScope.launch {
-            createAnalysisUseCase(AnalysisPostRequest(chatId)).collect {
-                handleAnalyzesResource(it)
+            createAnalysisUseCase(AnalysisPostRequest(chatId)).collect { resource ->
+                if (resource is Resource.Error && resource.message?.contains("already in progress", ignoreCase = true) == true) {
+                    _state.value = _state.value.copy(
+                        isAnalysisInProgress = true,
+                        errorMessage = ""
+                    )
+                    startPolling(chatId)
+                } else {
+                    handleAnalyzesResource(resource)
+                }
+            }
+        }
+    }
+
+    private fun startPolling(chatId: String, retryCount: Int = 0) {
+        if (retryCount > 20) { // 1 minute timeout
+            _state.value = _state.value.copy(
+                isAnalysisInProgress = false,
+                errorMessage = "Analysis timed out. Please try again."
+            )
+            return
+        }
+        viewModelScope.launch {
+            delay(3000) // Wait 3 seconds
+            getAnalyzesByChatIdUseCase(chatId).collect { resource ->
+                if (resource is Resource.Success) {
+                    if (resource.data.isNotEmpty()) {
+                        handleAnalyzesResource(resource)
+                    } else {
+                        startPolling(chatId, retryCount + 1)
+                    }
+                } else {
+                    handleAnalyzesResource(resource)
+                }
             }
         }
     }

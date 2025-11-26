@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.graphics.Color
 import com.ch3x.chatlyzer.ui.components.analysis_ui_builder.MessageExample
 
 @Composable
@@ -20,15 +21,13 @@ fun AnalysisWithExamplesCard(
     icon: String,
     examples: List<MessageExample>,
 ) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(20.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+    com.ch3x.chatlyzer.ui.components.GlassCard(
+        modifier = Modifier.fillMaxWidth()
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(20.dp)
+                .padding(com.ch3x.chatlyzer.ui.components.analysis_ui_builder.AnalysisLayoutDirectives.CARD_PADDING)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -36,7 +35,8 @@ fun AnalysisWithExamplesCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.weight(1f)
                 ) {
                     Text(
                         text = icon,
@@ -46,7 +46,8 @@ fun AnalysisWithExamplesCard(
                     Text(
                         text = title,
                         fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
                 
@@ -55,6 +56,7 @@ fun AnalysisWithExamplesCard(
                         text = "%.1f/%.0f".format(it, maxScore),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
+                        color = com.ch3x.chatlyzer.ui.theme.PrimaryPink
                     )
                 }
             }
@@ -64,7 +66,8 @@ fun AnalysisWithExamplesCard(
             Text(
                 text = description,
                 fontSize = 14.sp,
-                lineHeight = 20.sp
+                lineHeight = 20.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             
             if (examples.isNotEmpty()) {
@@ -74,6 +77,7 @@ fun AnalysisWithExamplesCard(
                     text = "📝 Examples from your chat:",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -93,7 +97,8 @@ fun AnalysisWithExamplesCard(
                     Text(
                         text = "+${examples.size - 2} more examples",
                         fontSize = 12.sp,
-                        modifier = Modifier.padding(start = 8.dp)
+                        modifier = Modifier.padding(start = 8.dp),
+                        color = com.ch3x.chatlyzer.ui.theme.PrimaryPink
                     )
                 }
             }

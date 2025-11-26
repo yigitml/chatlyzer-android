@@ -10,6 +10,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+
 @Composable
 fun PremiumContent(
     onUnlockClick: () -> Unit = {},
@@ -18,9 +21,12 @@ fun PremiumContent(
     onPrivacyClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
+    val scrollState = rememberScrollState()
+
     Column(
         modifier = modifier
             .fillMaxSize()
+            .verticalScroll(scrollState)
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -51,5 +57,7 @@ fun PremiumContent(
             onTermsClick = onTermsClick,
             onPrivacyClick = onPrivacyClick
         )
+        
+        Spacer(modifier = Modifier.height(16.dp))
     }
 } 

@@ -47,4 +47,6 @@ interface ChatRepository {
     suspend fun deleteChat(
         chatDeleteRequest: ChatDeleteRequest
     ): Chat
+
+    fun getChats(): kotlinx.coroutines.flow.Flow<com.ch3x.chatlyzer.util.Resource<List<Chat>>>
 }

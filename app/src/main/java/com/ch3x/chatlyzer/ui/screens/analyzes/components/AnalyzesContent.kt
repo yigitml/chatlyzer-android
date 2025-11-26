@@ -42,16 +42,20 @@ fun AnalyzesContent(
 
             ScreenState.Success -> {
                 if (state.analyzes.isEmpty()) {
-                    EmptyState(
-                        title = if (chatId != null) "No analyses for this chat" else "No analyses yet",
-                        subtitle = if (chatId != null)
-                            "Analyze this chat to see insights"
-                        else
-                            "Create your first analysis to get started",
-                        icon = Icons.Outlined.Analytics,
-                        buttonText = "Create Analysis",
-                        onButtonClick = onCreateAnalysis
-                    )
+                    if (state.isAnalysisInProgress) {
+                        LoadingState(message = "Analysis in progress...")
+                    } else {
+                        EmptyState(
+                            title = if (chatId != null) "No analyses for this chat" else "No analyses yet",
+                            subtitle = if (chatId != null)
+                                "Analyze this chat to see insights"
+                            else
+                                "Create your first analysis to get started",
+                            icon = Icons.Outlined.Analytics,
+                            buttonText = "Create Analysis",
+                            onButtonClick = onCreateAnalysis
+                        )
+                    }
                 } else {
                     Column(
                         verticalArrangement = Arrangement.Top,
@@ -78,7 +82,7 @@ fun AnalyzesContent(
                             analyses = state.analyzes,
                             onAnalysisClick = onNavigateToAnalysisDetail,
                             chatId = chatId,
-                            modifier = Modifier.padding()
+                            modifier = Modifier.padding().weight(1f)
                         )
                     }
                 }

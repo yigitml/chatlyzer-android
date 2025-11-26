@@ -12,6 +12,7 @@ val nunitoFamily = FontFamily(
     Font(R.font.nunito_regular),
     Font(R.font.nunito_extralight, FontWeight.Light),
     Font(R.font.nunito_bold, FontWeight.Bold),
+    Font(R.font.nunito_bold, FontWeight.SemiBold) // Added SemiBold if available, otherwise fallback
 )
 
 val Typography = Typography(
@@ -36,18 +37,16 @@ val Typography = Typography(
         lineHeight = 44.sp,
         letterSpacing = 0.sp
     ),
-    
-   
     headlineLarge = TextStyle(
         fontFamily = nunitoFamily,
-        fontWeight = FontWeight.SemiBold,
+        fontWeight = FontWeight.Bold, // Increased weight
         fontSize = 32.sp,
         lineHeight = 40.sp,
         letterSpacing = 0.sp
     ),
     headlineMedium = TextStyle(
         fontFamily = nunitoFamily,
-        fontWeight = FontWeight.SemiBold,
+        fontWeight = FontWeight.Bold, // Increased weight
         fontSize = 28.sp,
         lineHeight = 36.sp,
         letterSpacing = 0.sp
@@ -59,8 +58,6 @@ val Typography = Typography(
         lineHeight = 32.sp,
         letterSpacing = 0.sp
     ),
-    
-   
     titleLarge = TextStyle(
         fontFamily = nunitoFamily,
         fontWeight = FontWeight.SemiBold,
@@ -82,14 +79,12 @@ val Typography = Typography(
         lineHeight = 20.sp,
         letterSpacing = 0.1.sp
     ),
-    
-   
     bodyLarge = TextStyle(
         fontFamily = nunitoFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         lineHeight = 24.sp,
-        letterSpacing = 0.15.sp
+        letterSpacing = 0.5.sp
     ),
     bodyMedium = TextStyle(
         fontFamily = nunitoFamily,
@@ -105,8 +100,6 @@ val Typography = Typography(
         lineHeight = 16.sp,
         letterSpacing = 0.4.sp
     ),
-    
-   
     labelLarge = TextStyle(
         fontFamily = nunitoFamily,
         fontWeight = FontWeight.Medium,

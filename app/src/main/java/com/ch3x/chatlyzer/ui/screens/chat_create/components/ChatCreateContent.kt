@@ -2,6 +2,7 @@ package com.ch3x.chatlyzer.ui.screens.chat_create.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
@@ -11,6 +12,12 @@ import com.ch3x.chatlyzer.domain.model.Analysis
 import com.ch3x.chatlyzer.ui.screens.chat_create.AnalysisType
 import com.ch3x.chatlyzer.ui.screens.chat_create.ChatCreateEvent
 import com.ch3x.chatlyzer.ui.screens.chat_create.ChatCreateState
+
+import androidx.compose.foundation.background
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.graphics.Brush
+import com.ch3x.chatlyzer.ui.theme.BackgroundDark
+import com.ch3x.chatlyzer.ui.theme.SurfaceDark
 
 @Composable
 fun ChatCreateContent(
@@ -22,7 +29,9 @@ fun ChatCreateContent(
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .background(MaterialTheme.colorScheme.background)
+            .padding(16.dp)
+            .imePadding(), // Handle keyboard
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         if (state.isImporting) {

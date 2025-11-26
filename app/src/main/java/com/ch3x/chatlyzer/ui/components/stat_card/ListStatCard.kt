@@ -21,14 +21,13 @@ fun ListStatCard(
     icon: String,
     maxItemsToShow: Int = 5
 ) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(30.dp),
+    com.ch3x.chatlyzer.ui.components.GlassCard(
+        modifier = Modifier.fillMaxWidth()
     ) {
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp),
+            .fillMaxWidth()
+            .padding(com.ch3x.chatlyzer.ui.components.analysis_ui_builder.AnalysisLayoutDirectives.CARD_PADDING),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(
@@ -42,7 +41,8 @@ fun ListStatCard(
                 Text(
                     text = title,
                     fontSize = 18.sp,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
             
@@ -52,7 +52,8 @@ fun ListStatCard(
                 Text(
                     text = "• $item",
                     fontSize = 14.sp,
-                    modifier = Modifier.padding(vertical = 2.dp)
+                    modifier = Modifier.padding(vertical = 2.dp),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             
@@ -60,7 +61,8 @@ fun ListStatCard(
                 Text(
                     text = "+${items.size - maxItemsToShow} more",
                     fontSize = 12.sp,
-                    modifier = Modifier.padding(top = 4.dp)
+                    modifier = Modifier.padding(top = 4.dp),
+                    color = com.ch3x.chatlyzer.ui.theme.PrimaryPink
                 )
             }
         }

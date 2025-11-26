@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.material3.MaterialTheme
 
 @Composable
 fun PaginationDots(
@@ -31,7 +32,7 @@ fun PaginationDots(
                     .size(8.dp)
                     .clip(CircleShape)
                     .background(
-                        if (index == currentPage) Color.White else Color.Gray
+                        if (index == currentPage) MaterialTheme.colorScheme.onBackground else Color.Gray
                     )
             )
             

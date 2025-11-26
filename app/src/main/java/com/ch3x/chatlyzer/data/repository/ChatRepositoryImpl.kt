@@ -53,4 +53,24 @@ class ChatRepositoryImpl @Inject constructor(
 
     override suspend fun deleteChat(chatDeleteRequest: ChatDeleteRequest): Chat =
         chatApi.deleteChat(chatDeleteRequest).requireDataOrThrow().toDomain()
+
+    override fun getChats(): kotlinx.coroutines.flow.Flow<com.ch3x.chatlyzer.util.Resource<List<Chat>>> = kotlinx.coroutines.flow.flow {
+        emit(com.ch3x.chatlyzer.util.Resource.Loading())
+        
+        val cachedChats = getCachedChats()
+        emit(com.ch3x.chatlyzer.util.Resource.Success(cachedChats))
+        
+        try {
+            val remoteChats = fetchChats()
+            // Clear old cache to avoid stale data if items were deleted on server?
+            // Or just insert/update.
+            // For a robust sync, we should probably clear and insert, or diff.
+            // Let's clear and insert for simplicity as per "SSOT" usually implies network is truth.
+            clearCachedChats() 
+            cacheChats(remoteChats)
+            emit(com.ch3x.chatlyzer.util.Resource.Success(remoteChats))
+        } catch (e: Exception) {
+            emit(com.ch3x.chatlyzer.util.Resource.Error(e.message ?: "Unknown error", cachedChats))
+        }
+    }
 }

@@ -1,7 +1,7 @@
 package com.ch3x.chatlyzer.ui.components.analysis_ui_builder
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import com.ch3x.chatlyzer.ui.components.stat_card.*
@@ -15,36 +15,32 @@ class SimpOMeterAnalysisBuilder {
         val behaviors = data.getAsJsonArray("behaviorsDetected")
         val messageRefs = data.getAsJsonArray("messageRefs")
         
-        LazyColumn(
+        Column(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            item {
-                ProgressStatCard(
-                    title = "Simp Score",
-                    value = simpScore,
-                    maxValue = 10f,
-                    subtitle = AnalysisUtils.getSimpLevel(simpScore),
-                    icon = "💕",
-                    progressColor = AnalysisUtils.getSimpColor(simpScore)
+            ProgressStatCard(
+                title = "Simp Score",
+                value = simpScore,
+                maxValue = 10f,
+                subtitle = AnalysisUtils.getSimpLevel(simpScore),
+                icon = "💕",
+                progressColor = AnalysisUtils.getSimpColor(simpScore)
+            )
+
+            behaviors?.let { behaviorsArray ->
+                val behaviorsList = mutableListOf<String>()
+                for (i in 0 until behaviorsArray.size()) {
+                    behaviorsList.add(behaviorsArray[i].asString)
+                }
+                ListStatCard(
+                    title = "Behaviors Detected",
+                    items = behaviorsList,
+                    icon = "🎭"
                 )
             }
 
-            behaviors?.let { behaviorsArray ->
-                item {
-                    val behaviorsList = mutableListOf<String>()
-                    for (i in 0 until behaviorsArray.size()) {
-                        behaviorsList.add(behaviorsArray[i].asString)
-                    }
-                    ListStatCard(
-                        title = "Behaviors Detected",
-                        items = behaviorsList,
-                        icon = "🎭"
-                    )
-                }
-            }
-
             messageRefs?.let { refs ->
-                items(refs.size().coerceAtMost(3)) { index ->
+                repeat(refs.size().coerceAtMost(3)) { index ->
                     val ref = refs[index].asJsonObject
                     MessageRefCard(
                         sender = if (ref.get("sender")?.asString == "user") "You" else "Other",

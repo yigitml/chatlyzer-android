@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -50,25 +51,32 @@ class SignInViewModel @Inject constructor(
     init { checkInitialLoginState() }
 
     private fun checkInitialLoginState() {
-        viewModelScope.launch {
-            appPreferencesRepository.isUserLoggedIn().onEach { loggedIn ->
+        appPreferencesRepository.isUserLoggedIn()
+            .flatMapLatest { loggedIn ->
                 if (loggedIn) {
-                    getUserUseCase.invoke().onEach { userResource ->
-                        when (userResource) {
-                            is Resource.Success -> _signInState.update { SignInState.Success }
-                            is Resource.Error -> {
-                                Log.e(TAG, "Error fetching user: ${userResource.message}")
-                                _signInState.update { SignInState.Error(userResource.message) }
-                            }
-                            is Resource.Loading -> _signInState.update { SignInState.Loading }
-                        }
-                    }.catch { e -> Log.e(TAG, "User fetch exception: ${e.localizedMessage}") }
-                        .launchIn(viewModelScope)
+                    getUserUseCase.invoke()
                 } else {
-                    _signInState.update { SignInState.Idle }
+                    kotlinx.coroutines.flow.flowOf(Resource.Success(null))
                 }
-            }.launchIn(this)
-        }
+            }
+            .onEach { userResource ->
+                when (userResource) {
+                    is Resource.Success -> {
+                        if (userResource.data != null) {
+                            _signInState.update { SignInState.Success }
+                        } else {
+                            _signInState.update { SignInState.Idle }
+                        }
+                    }
+                    is Resource.Error -> {
+                        Log.e(TAG, "Error fetching user: ${userResource.message}")
+                        _signInState.update { SignInState.Error(userResource.message) }
+                    }
+                    is Resource.Loading -> _signInState.update { SignInState.Loading }
+                }
+            }
+            .catch { e -> Log.e(TAG, "User fetch exception: ${e.localizedMessage}") }
+            .launchIn(viewModelScope)
     }
 
     fun onEvent(event: SignInEvent) {

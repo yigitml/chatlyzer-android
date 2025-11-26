@@ -1,5 +1,6 @@
 package com.ch3x.chatlyzer.ui.components.analysis_ui_builder
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -11,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 object AnalysisUtils {
 
@@ -111,7 +113,7 @@ object AnalysisLayoutDirectives {
     
     // Unified Padding System
     val SCREEN_PADDING = 16.dp
-    val CARD_PADDING = 20.dp
+    val CARD_PADDING = 16.dp
     val CONTENT_PADDING = 12.dp
     
     // Unified Corner Radius
@@ -145,9 +147,8 @@ fun MetricCard(
     icon: String,
     modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = modifier,
-        shape = RoundedCornerShape(AnalysisLayoutDirectives.CARD_CORNER_RADIUS)
+    com.ch3x.chatlyzer.ui.components.GlassCard(
+        modifier = modifier
     ) {
         Column(
             modifier = Modifier.padding(AnalysisLayoutDirectives.CARD_PADDING),
@@ -158,15 +159,30 @@ fun MetricCard(
                 style = MaterialTheme.typography.headlineMedium
             )
             Spacer(modifier = Modifier.height(AnalysisLayoutDirectives.CONTENT_SPACING))
-            Text(
-                text = value,
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold
-            )
+            
+            // Try to parse as number for animation
+            val numValue = value.toIntOrNull()
+            if (numValue != null) {
+                com.ch3x.chatlyzer.ui.components.animations.CountUpText(
+                    targetValue = numValue,
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+            } else {
+                Text(
+                    text = value,
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+            }
+            
             Text(
                 text = title,
                 style = MaterialTheme.typography.bodySmall,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                color = com.ch3x.chatlyzer.ui.theme.TextGray
             )
         }
     }
@@ -178,9 +194,12 @@ fun ScoreCard(
     score: Float,
     maxScore: Float,
     description: String,
-    isPercentage: Boolean = false,
     modifier: Modifier = Modifier
 ) {
+    // Normalize score to 10
+    val normalizedScore = if (maxScore > 0) (score / maxScore) * 10f else 0f
+    val displayScore = String.format("%.1f", normalizedScore)
+
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(AnalysisLayoutDirectives.CARD_CORNER_RADIUS)
@@ -196,13 +215,27 @@ fun ScoreCard(
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.weight(1f)
                 )
-                Text(
-                    text = if (isPercentage) "${score.toInt()}%" else "${score}/10",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                )
+                Row(
+                    verticalAlignment = Alignment.Bottom,
+                    horizontalArrangement = Arrangement.spacedBy(2.dp)
+                ) {
+                    Text(
+                        text = displayScore,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = com.ch3x.chatlyzer.ui.theme.PrimaryPink
+                    )
+                    Text(
+                        text = "/10",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = com.ch3x.chatlyzer.ui.theme.PrimaryPink,
+                        modifier = Modifier.padding(bottom = 4.dp)
+                    )
+                }
             }
             
             Text(
@@ -211,14 +244,37 @@ fun ScoreCard(
                 modifier = Modifier.padding(top = 4.dp, bottom = AnalysisLayoutDirectives.CONTENT_SPACING)
             )
             
-            LinearProgressIndicator(
-                progress = score / maxScore,
+            // Custom Progress Bar
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(8.dp)
-                    .clip(RoundedCornerShape(4.dp)),
-                trackColor = MaterialTheme.colorScheme.primary
-            )
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)) // Empty track
+            ) {
+                Row(modifier = Modifier.fillMaxSize()) {
+                    if (normalizedScore > 0) {
+                        Box(
+                            modifier = Modifier
+                                .weight(normalizedScore)
+                                .fillMaxHeight()
+                                .background(com.ch3x.chatlyzer.ui.theme.PrimaryPink)
+                        )
+                    }
+                    
+                    // Separator
+                    Box(
+                        modifier = Modifier
+                            .width(2.dp)
+                            .fillMaxHeight()
+                            .background(Color.White)
+                    )
+                    
+                    if (normalizedScore < 10f) {
+                        Spacer(modifier = Modifier.weight(10f - normalizedScore))
+                    }
+                }
+            }
         }
     }
 }
@@ -274,48 +330,111 @@ fun WarningCard(
     warningColor: Color,
     modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(AnalysisLayoutDirectives.CARD_CORNER_RADIUS)
+    com.ch3x.chatlyzer.ui.components.GlassCard(
+        modifier = modifier.fillMaxWidth()
     ) {
         Column(
-            modifier = Modifier.padding(AnalysisLayoutDirectives.CARD_PADDING)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(AnalysisLayoutDirectives.CARD_PADDING)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                )
-                Text(
-                    text = "${severity}/10",
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold,
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "🚩",
+                        fontSize = 20.sp
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text(
+                        text = title,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+
+                Surface(
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.padding(4.dp),
+                    color = warningColor.copy(alpha = 0.2f)
+                ) {
+                    Text(
+                        text = "${severity}/10",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                        color = warningColor
+                    )
+                }
             }
             
-            Spacer(modifier = Modifier.height(AnalysisLayoutDirectives.CONTENT_SPACING))
+            Spacer(modifier = Modifier.height(12.dp))
             
             Text(
                 text = description,
-                style = MaterialTheme.typography.bodyMedium,
+                fontSize = 14.sp,
+                lineHeight = 20.sp,
+                color = com.ch3x.chatlyzer.ui.theme.TextGray
             )
             
             if (examples.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(AnalysisLayoutDirectives.ITEM_SPACING))
+                Spacer(modifier = Modifier.height(16.dp))
+                
                 Text(
-                    text = "Examples:",
-                    style = MaterialTheme.typography.bodySmall,
-                    fontWeight = FontWeight.SemiBold,
+                    text = "🔍 Evidence in your chat:",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onBackground
                 )
                 
+                Spacer(modifier = Modifier.height(12.dp))
+                
                 examples.take(2).forEach { example ->
-                    Spacer(modifier = Modifier.height(AnalysisLayoutDirectives.CONTENT_SPACING))
-                    MessageExampleCard(example)
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(
+                                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.05f),
+                                shape = RoundedCornerShape(12.dp)
+                            )
+                            .padding(12.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = example.sender,
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
+                            Text(
+                                text = example.timestamp,
+                                fontSize = 11.sp,
+                                color = com.ch3x.chatlyzer.ui.theme.TextGray
+                            )
+                        }
+                        
+                        Spacer(modifier = Modifier.height(6.dp))
+                        
+                        Text(
+                            text = "\"${example.content}\"",
+                            fontSize = 13.sp,
+                            maxLines = 2,
+                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                            color = com.ch3x.chatlyzer.ui.theme.TextGray
+                        )
+                    }
+                    
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
             }
         }

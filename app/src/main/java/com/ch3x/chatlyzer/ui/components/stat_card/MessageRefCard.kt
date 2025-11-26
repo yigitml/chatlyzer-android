@@ -8,6 +8,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.foundation.background
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -21,14 +23,14 @@ fun MessageRefCard(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
     ) {
         if (contextLabel.isNotEmpty()) {
             Text(
                 text = "💡 Example of: $contextLabel",
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Medium,
-                modifier = Modifier.padding(bottom = 8.dp)
+                modifier = Modifier.padding(bottom = 8.dp),
+                color = com.ch3x.chatlyzer.ui.theme.TextGray
             )
         }
         
@@ -41,10 +43,12 @@ fun MessageRefCard(
                 text = sender,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground
             )
             Text(
                 text = timestamp,
                 fontSize = 12.sp,
+                color = com.ch3x.chatlyzer.ui.theme.TextGray
             )
         }
         
@@ -53,6 +57,10 @@ fun MessageRefCard(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
+                .background(
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.05f),
+                    shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)
+                )
                 .padding(12.dp)
         ) {
             Text(
@@ -61,7 +69,8 @@ fun MessageRefCard(
                 lineHeight = 20.sp,
                 textAlign = TextAlign.Start,
                 maxLines = 4,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                color = MaterialTheme.colorScheme.onBackground
             )
         }
     }

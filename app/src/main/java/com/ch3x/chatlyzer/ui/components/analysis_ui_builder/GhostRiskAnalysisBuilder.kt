@@ -1,7 +1,7 @@
 package com.ch3x.chatlyzer.ui.components.analysis_ui_builder
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import com.ch3x.chatlyzer.ui.components.stat_card.*
@@ -16,22 +16,20 @@ class GhostRiskAnalysisBuilder {
         val riskScore = data.get("riskScore")?.asFloat ?: 0f
         val signals = data.getAsJsonArray("signals")
         
-        LazyColumn(
+        Column(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            item {
-                ProgressStatCard(
-                    title = "Ghost Risk",
-                    value = riskScore,
-                    maxValue = 10f,
-                    subtitle = "Risk Level: ${riskLevel.capitalize(Locale.ROOT)}",
-                    icon = "👻",
-                    progressColor = AnalysisUtils.getGhostRiskColor(riskLevel)
-                )
-            }
+            ProgressStatCard(
+                title = "Ghost Risk",
+                value = riskScore,
+                maxValue = 10f,
+                subtitle = "Risk Level: ${riskLevel.capitalize(Locale.ROOT)}",
+                icon = "👻",
+                progressColor = AnalysisUtils.getGhostRiskColor(riskLevel)
+            )
 
             signals?.let { signalsArray ->
-                items(signalsArray.size()) { index ->
+                repeat(signalsArray.size()) { index ->
                     val signal = signalsArray[index].asJsonObject
                     GhostRiskSignalCard(
                         signalType = signal.get("label")?.asString ?: "Unknown Signal",

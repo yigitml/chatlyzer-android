@@ -22,20 +22,6 @@ fun GhostRiskSignalCard(
     examples: List<MessageExample>,
     riskLevel: String
 ) {
-    val backgroundColor = when (riskLevel.lowercase()) {
-        "high" -> Color(0xFFFFEBEE)
-        "medium" -> Color(0xFFFFF3E0)
-        "low" -> Color(0xFFE8F5E8)
-        else -> Color(0xFFF5F5F5)
-    }
-
-    val borderColor = when (riskLevel.lowercase()) {
-        "high" -> Color(0xFFE57373)
-        "medium" -> Color(0xFFFFB74D)
-        "low" -> Color(0xFF81C784)
-        else -> Color(0xFFBDBDBD)
-    }
-
     val riskEmoji = when (riskLevel.lowercase()) {
         "high" -> "🚨"
         "medium" -> "⚠️"
@@ -43,14 +29,20 @@ fun GhostRiskSignalCard(
         else -> "👻"
     }
 
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(20.dp),
+    val riskColor = when (riskLevel.lowercase()) {
+        "high" -> com.ch3x.chatlyzer.ui.theme.ErrorRed
+        "medium" -> com.ch3x.chatlyzer.ui.theme.SecondaryOrange
+        "low" -> com.ch3x.chatlyzer.ui.theme.SuccessGreen
+        else -> com.ch3x.chatlyzer.ui.theme.TextGray
+    }
+
+    com.ch3x.chatlyzer.ui.components.GlassCard(
+        modifier = Modifier.fillMaxWidth()
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(20.dp)
+                .padding(com.ch3x.chatlyzer.ui.components.analysis_ui_builder.AnalysisLayoutDirectives.CARD_PADDING)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -68,19 +60,22 @@ fun GhostRiskSignalCard(
                     Text(
                         text = signalType,
                         fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 }
 
                 Surface(
                     shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier.padding(4.dp)
+                    modifier = Modifier.padding(4.dp),
+                    color = riskColor.copy(alpha = 0.2f)
                 ) {
                     Text(
                         text = riskLevel.uppercase(),
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                        color = riskColor
                     )
                 }
             }
@@ -90,7 +85,8 @@ fun GhostRiskSignalCard(
             Text(
                 text = explanation,
                 fontSize = 14.sp,
-                lineHeight = 20.sp
+                lineHeight = 20.sp,
+                color = com.ch3x.chatlyzer.ui.theme.TextGray
             )
 
             if (examples.isNotEmpty()) {
@@ -100,6 +96,7 @@ fun GhostRiskSignalCard(
                     text = "🔍 Evidence in your chat:",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onBackground
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -108,6 +105,10 @@ fun GhostRiskSignalCard(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .background(
+                                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.05f),
+                                shape = RoundedCornerShape(12.dp)
+                            )
                             .padding(12.dp)
                     ) {
                         Row(
@@ -119,10 +120,12 @@ fun GhostRiskSignalCard(
                                 text = example.sender,
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.Medium,
+                                color = MaterialTheme.colorScheme.onBackground
                             )
                             Text(
                                 text = example.timestamp,
                                 fontSize = 11.sp,
+                                color = com.ch3x.chatlyzer.ui.theme.TextGray
                             )
                         }
 
@@ -133,6 +136,7 @@ fun GhostRiskSignalCard(
                             fontSize = 13.sp,
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis,
+                            color = com.ch3x.chatlyzer.ui.theme.TextGray
                         )
                     }
 
@@ -143,7 +147,8 @@ fun GhostRiskSignalCard(
                     Text(
                         text = "... and ${examples.size - 2} more similar messages",
                         fontSize = 12.sp,
-                        modifier = Modifier.padding(start = 8.dp)
+                        modifier = Modifier.padding(start = 8.dp),
+                        color = com.ch3x.chatlyzer.ui.theme.PrimaryPink
                     )
                 }
             }

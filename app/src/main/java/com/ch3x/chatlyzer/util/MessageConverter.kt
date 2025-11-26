@@ -15,7 +15,10 @@ data class ParsedMessage(
 
 enum class ChatPlatform(val value: String) {
     WHATSAPP("whatsapp"),
-    INSTAGRAM("instagram")
+    INSTAGRAM("instagram"),
+    TELEGRAM("telegram"),
+    DISCORD("discord"),
+    GENERIC("generic")
 }
 
 abstract class MessageConverter {
@@ -38,8 +41,11 @@ class WhatsAppConverter : MessageConverter() {
     override val platform = ChatPlatform.WHATSAPP
 
     companion object {
-        // WhatsApp date+time format for exported messages like: 31.12.23, 23:59 - Sender: Message
-        private val MESSAGE_HEADER = Regex("""^(\d{1,2}\.\d{1,2}\.\d{2,4}), (\d{2}:\d{2}) - (.*)""")
+        // WhatsApp date+time formats for exported messages
+        // Old format: 31.12.23, 23:59 - Sender: Message
+        private val MESSAGE_HEADER_OLD = Regex("""^(\d{1,2}\.\d{1,2}\.\d{2,4}), (\d{2}:\d{2}) - (.*)$""")
+        // New format: [31.12.2023, 23:59:59] Sender: Message
+        private val MESSAGE_HEADER_NEW = Regex("""^\[(\d{1,2}\.\d{1,2}\.\d{4}), (\d{2}:\d{2}:\d{2})\] (.*)$""")
 
         // System messages (tr, en, de)
         val SYSTEM_MESSAGES = listOf(
@@ -101,9 +107,17 @@ class WhatsAppConverter : MessageConverter() {
         var currentTimestamp: Date? = null
 
         for (line in lines) {
-            val match = MESSAGE_HEADER.find(line)
+            // Try both WhatsApp formats
+            var match = MESSAGE_HEADER_NEW.find(line)
+            var isNewFormat = true
+
+            if (match == null) {
+                match = MESSAGE_HEADER_OLD.find(line)
+                isNewFormat = false
+            }
 
             if (match != null) {
+                // Finalize previous message if exists
                 if (currentSender != null && currentMessage != null && currentTimestamp != null) {
                     messages.add(
                         ParsedMessage(
@@ -116,7 +130,8 @@ class WhatsAppConverter : MessageConverter() {
                 }
 
                 val (dateStr, timeStr, rest) = match.destructured
-                val timestamp = parseTimestamp(dateStr, timeStr) ?: continue
+                val timestamp = parseTimestamp(dateStr, timeStr, isNewFormat) ?: continue
+
                 val colonIndex = rest.indexOf(":")
 
                 if (colonIndex > 0) {
@@ -162,7 +177,7 @@ class WhatsAppConverter : MessageConverter() {
                         currentMessage = null
                         currentTimestamp = null
                     } else {
-                        // Unexpected format, skip or log
+                        // Unexpected format, skip
                         currentSender = null
                         currentMessage = null
                         currentTimestamp = null
@@ -189,24 +204,41 @@ class WhatsAppConverter : MessageConverter() {
         return messages
     }
 
-    private fun parseTimestamp(dateStr: String, timeStr: String): Date? {
-        val formats = listOf(
-            "dd.MM.yy HH:mm",
-            "dd.MM.yyyy HH:mm"
-        )
+    private fun parseTimestamp(dateStr: String, timeStr: String, hasSeconds: Boolean = false): Date? {
+        try {
+            // Parse based on the format pattern
+            val dateParts = dateStr.split('.')
+            if (dateParts.size != 3) return null
+            
+            val day = dateParts[0]
+            val month = dateParts[1]
+            val year = dateParts[2]
+            
+            val timeParts = timeStr.split(':')
+            if (timeParts.size < 2) return null
+            
+            val hours = timeParts[0]
+            val minutes = timeParts[1]
+            val seconds = if (hasSeconds && timeParts.size > 2) timeParts[2] else "0"
 
-        for (locale in listOf(Locale.ENGLISH, Locale("tr"), Locale.GERMAN)) {
-            for (pattern in formats) {
-                try {
-                    val sdf = SimpleDateFormat(pattern, locale)
-                    sdf.timeZone = TimeZone.getDefault()
-                    return sdf.parse("$dateStr $timeStr")
-                } catch (_: Exception) {
-                    // Try next format
-                }
+            var fullYear: Int
+            if (year.length == 2) {
+                val yearNum = year.toInt()
+                // Assume 20xx for years 00-50, 19xx for years 51-99
+                fullYear = if (yearNum <= 50) 2000 + yearNum else 1900 + yearNum
+            } else {
+                fullYear = year.toInt()
             }
+
+            val formattedDateStr = "$day.$month.$fullYear $hours:$minutes:$seconds"
+            val sdf = SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.getDefault())
+            sdf.timeZone = TimeZone.getDefault()
+            return sdf.parse(formattedDateStr)
+
+        } catch (error: Exception) {
+            println("Failed to parse WhatsApp timestamp: $dateStr $timeStr $error")
+            return null
         }
-        return null
     }
 
     private fun isSystemMessage(content: String): Boolean {
@@ -284,10 +316,160 @@ class InstagramConverter : MessageConverter() {
     }
 }
 
+class TelegramConverter : MessageConverter() {
+    override val platform = ChatPlatform.TELEGRAM
+
+    override fun parseMessages(rawText: String): List<ParsedMessage> {
+        val lines = rawText.lines().filter { it.trim().isNotEmpty() }
+        val messages = mutableListOf<ParsedMessage>()
+
+        // Telegram pattern: [DD.MM.YYYY HH:MM:SS] Sender: Message
+        val messagePattern = Regex("""^\[(\d{2}\.\d{2}\.\d{4})\s(\d{2}:\d{2}:\d{2})\]\s(.+)$""")
+
+        for (line in lines) {
+            val match = messagePattern.find(line) ?: continue
+
+            val (dateStr, timeStr, content) = match.destructured
+
+            // Parse timestamp
+            val timestamp = parseTelegramTimestamp(dateStr, timeStr) ?: continue
+
+            val colonIndex = content.indexOf(':')
+
+            if (colonIndex > 0) {
+                val sender = content.substring(0, colonIndex).trim()
+                val messageContent = content.substring(colonIndex + 1).trim()
+
+                if (messageContent.isNotEmpty()) {
+                    messages.add(
+                        ParsedMessage(
+                            sender = sender,
+                            content = messageContent,
+                            timestamp = timestamp,
+                            metadata = mapOf("platform" to platform.value)
+                        )
+                    )
+                }
+            }
+        }
+
+        return messages
+    }
+
+    private fun parseTelegramTimestamp(dateStr: String, timeStr: String): Date? {
+        try {
+            val sdf = SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.getDefault())
+            sdf.timeZone = TimeZone.getDefault()
+            return sdf.parse("$dateStr $timeStr")
+        } catch (error: Exception) {
+            println("Failed to parse Telegram timestamp: $dateStr $timeStr $error")
+            return null
+        }
+    }
+}
+
+class DiscordConverter : MessageConverter() {
+    override val platform = ChatPlatform.DISCORD
+
+    override fun parseMessages(rawText: String): List<ParsedMessage> {
+        val lines = rawText.lines().filter { it.trim().isNotEmpty() }
+        val messages = mutableListOf<ParsedMessage>()
+
+        // Discord pattern: [DD-Mon-YY HH:MM:SS] Sender: Message
+        val messagePattern = Regex("""^\[(\d{2}-\w{3}-\d{2})\s(\d{2}:\d{2}:\d{2})\]\s(.+)$""")
+
+        for (line in lines) {
+            val match = messagePattern.find(line) ?: continue
+
+            val (dateStr, timeStr, content) = match.destructured
+
+            // Parse timestamp
+            val timestamp = parseDiscordTimestamp(dateStr, timeStr) ?: continue
+
+            val colonIndex = content.indexOf(':')
+
+            if (colonIndex > 0) {
+                val sender = content.substring(0, colonIndex).trim()
+                val messageContent = content.substring(colonIndex + 1).trim()
+
+                if (messageContent.isNotEmpty()) {
+                    messages.add(
+                        ParsedMessage(
+                            sender = sender,
+                            content = messageContent,
+                            timestamp = timestamp,
+                            metadata = mapOf("platform" to platform.value)
+                        )
+                    )
+                }
+            }
+        }
+
+        return messages
+    }
+
+    private fun parseDiscordTimestamp(dateStr: String, timeStr: String): Date? {
+        try {
+            // Parse format like "31-Dec-23"
+            // Note: SimpleDateFormat "dd-MMM-yy" might need English locale for Month names
+            val sdf = SimpleDateFormat("dd-MMM-yy HH:mm:ss", Locale.ENGLISH)
+            sdf.timeZone = TimeZone.getDefault()
+            return sdf.parse("$dateStr $timeStr")
+        } catch (error: Exception) {
+            println("Failed to parse Discord timestamp: $dateStr $timeStr $error")
+            return null
+        }
+    }
+}
+
+class GenericConverter : MessageConverter() {
+    override val platform = ChatPlatform.GENERIC
+
+    override fun parseMessages(rawText: String): List<ParsedMessage> {
+        val lines = rawText.lines().filter { it.trim().isNotEmpty() }
+        val messages = mutableListOf<ParsedMessage>()
+
+        for (line in lines) {
+            // Simple format: "sender: message" or just "message"
+            val colonIndex = line.indexOf(':')
+
+            if (colonIndex > 0) {
+                val sender = line.substring(0, colonIndex).trim()
+                val content = line.substring(colonIndex + 1).trim()
+
+                if (content.isNotEmpty()) {
+                    messages.add(
+                        ParsedMessage(
+                            sender = sender,
+                            content = content,
+                            timestamp = Date(), // Use current time as fallback
+                            metadata = mapOf("platform" to platform.value)
+                        )
+                    )
+                }
+            } else if (line.trim().isNotEmpty()) {
+                messages.add(
+                    ParsedMessage(
+                        sender = "Unknown",
+                        content = line.trim(),
+                        timestamp = Date(),
+                        metadata = mapOf("platform" to platform.value)
+                    )
+                )
+            }
+        }
+
+        return messages
+    }
+}
+
 object MessageConverterFactory {
     private val converters = mapOf(
         ChatPlatform.WHATSAPP to WhatsAppConverter(),
-        ChatPlatform.INSTAGRAM to InstagramConverter()
+        ChatPlatform.INSTAGRAM to InstagramConverter(),
+        ChatPlatform.TELEGRAM to TelegramConverter(),
+        ChatPlatform.DISCORD to DiscordConverter(),
+        ChatPlatform.GENERIC to GenericConverter()
     )
 
     fun getConverter(platform: ChatPlatform): MessageConverter {
@@ -296,11 +478,45 @@ object MessageConverterFactory {
     }
 
     fun detectPlatform(rawText: String): ChatPlatform {
-        if (Regex("""\d{2}\.\d{2}\.\d{2},\s\d{2}:\d{2}\s-\s""").containsMatchIn(rawText)) {
+        // Auto-detect platform based on content patterns
+
+        // WhatsApp patterns:
+        // Old format: DD.MM.YY, HH:MM -
+        // New format: [DD.MM.YYYY, HH:MM:SS]
+        if (Regex("""\d{1,2}\.\d{1,2}\.\d{2,4},\s\d{2}:\d{2}\s-\s""").containsMatchIn(rawText) ||
+            Regex("""\[\d{1,2}\.\d{1,2}\.\d{4},\s\d{2}:\d{2}:\d{2}\]""").containsMatchIn(rawText)) {
             return ChatPlatform.WHATSAPP
         }
 
-        else throw Exception("Platform couldn't be identified")
+        // Instagram: Try to parse as JSON array
+        try {
+            val parsed = JSONArray(rawText)
+            if (parsed.length() > 0) {
+                val obj = parsed.optJSONObject(0)
+                if (obj != null && obj.has("sender_name")) {
+                    return ChatPlatform.INSTAGRAM
+                }
+            }
+        } catch (_: Exception) {
+            // Not valid JSON, continue with other checks
+        }
+
+        // Telegram pattern: [DD.MM.YYYY HH:MM:SS]
+        if (Regex("""\[\d{2}\.\d{2}\.\d{4}\s\d{2}:\d{2}:\d{2}\]""").containsMatchIn(rawText)) {
+            return ChatPlatform.TELEGRAM
+        }
+
+        // Discord pattern: [DD-Mon-YY HH:MM:SS]
+        if (Regex("""\[\d{2}-\w{3}-\d{2}\s\d{2}:\d{2}:\d{2}\]""").containsMatchIn(rawText)) {
+            return ChatPlatform.DISCORD
+        }
+        
+        // Default to Generic if nothing else matches but there is content
+        if (rawText.isNotBlank()) {
+             return ChatPlatform.GENERIC
+        }
+
+        throw Exception("Platform couldn't be identified")
     }
 
     fun convertMessages(
