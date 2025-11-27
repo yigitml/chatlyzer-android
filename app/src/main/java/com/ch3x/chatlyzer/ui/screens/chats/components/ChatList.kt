@@ -24,7 +24,11 @@ fun ChatList(
     LazyColumn(
         modifier = modifier.fillMaxSize(),
     ) {
-        itemsIndexed(chats) { index, chat ->
+        itemsIndexed(
+            items = chats,
+            key = { _, chat -> chat.id },
+            contentType = { _, _ -> "chat_item" }
+        ) { index, chat ->
             ChatItem(
                 chat = chat,
                 index = index,

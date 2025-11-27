@@ -35,13 +35,13 @@ fun ChatCreateContent(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         if (state.isImporting) {
-            item {
+            item(key = "import_progress") {
                 ImportProgressSection(progress = state.importProgress)
             }
         }
 
         state.importedFileInfo?.let { fileInfo ->
-            item {
+            item(key = "file_info") {
                 ImportedFileInfoSection(
                     fileInfo = fileInfo,
                     onClearImport = { onEvent(ChatCreateEvent.ClearImportedData) },
@@ -50,18 +50,18 @@ fun ChatCreateContent(
             }
         }
 
-        item {
+        item(key = "analysis_type") {
             AnalysisTypeSelector(state.analysisType, onEvent)
         }
 
-        item {
+        item(key = "title") {
             ChatTitleSection(
                 title = state.title,
                 onTitleChange = { onEvent(ChatCreateEvent.UpdateTitle(it)) }
             )
         }
 
-        item {
+        item(key = "messages") {
             MessagesSection(
                 messages = state.messages,
                 onImportFile = onImportFile

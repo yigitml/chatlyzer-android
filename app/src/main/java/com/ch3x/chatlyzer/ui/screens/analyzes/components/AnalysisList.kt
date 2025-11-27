@@ -38,7 +38,11 @@ fun AnalysisList(
             }
         }
         
-        items(analyses) { analysis ->
+        items(
+            items = analyses,
+            key = { it.id },
+            contentType = { "analysis_item" }
+        ) { analysis ->
             val index = analyses.indexOf(analysis)
             AnimatedListItem(
                 index = index,
