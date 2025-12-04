@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.ch3x.chatlyzer.ui.theme.PrimaryPink
+import com.ch3x.chatlyzer.ui.theme.GoldenYellow
 
 @Composable
 fun PaginationDots(modifier: Modifier = Modifier, currentPage: Int, pageCount: Int = 3) {
@@ -24,7 +24,7 @@ fun PaginationDots(modifier: Modifier = Modifier, currentPage: Int, pageCount: I
                     .size(if (index == currentPage) 12.dp else 8.dp)
                     .clip(CircleShape)
                     .background(
-                        if (index == currentPage) PrimaryPink else Color.LightGray
+                        if (index == currentPage) GoldenYellow else Color.LightGray
                     )
             )
             if (index < pageCount - 1) {

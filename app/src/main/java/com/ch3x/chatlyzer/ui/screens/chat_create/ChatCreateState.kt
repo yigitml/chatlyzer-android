@@ -19,7 +19,8 @@ data class ChatCreateState(
     val selectedPlatform: ChatPlatform = ChatPlatform.WHATSAPP,
     val showPlatformSelector: Boolean = false,
     val importedFileInfo: ImportedFileInfo? = null,
-    val analysisType: AnalysisType = AnalysisType.NORMAL
+    val analysisType: AnalysisType = AnalysisType.NORMAL,
+    val step: ChatCreateStep = ChatCreateStep.IMPORT
 )
 
 @Immutable
@@ -34,4 +35,9 @@ enum class AnalysisType{
     NORMAL,
     PRIVACY,
     GHOST
+}
+
+enum class ChatCreateStep {
+    IMPORT,
+    CONFIGURE
 }

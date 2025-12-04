@@ -17,7 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ch3x.chatlyzer.R
-import com.ch3x.chatlyzer.ui.theme.Pink
+import com.ch3x.chatlyzer.ui.theme.GoldenYellow
 
 @Composable
 fun GoogleSignInButton(
@@ -32,7 +32,7 @@ fun GoogleSignInButton(
         modifier = modifier
             .fillMaxWidth()
             .height(64.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = Pink)
+        colors = ButtonDefaults.buttonColors(containerColor = GoldenYellow)
     ) {
         GoogleSignInButtonContent()
     }

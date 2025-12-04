@@ -31,7 +31,7 @@ fun GhostRiskSignalCard(
 
     val riskColor = when (riskLevel.lowercase()) {
         "high" -> com.ch3x.chatlyzer.ui.theme.ErrorRed
-        "medium" -> com.ch3x.chatlyzer.ui.theme.SecondaryOrange
+        "medium" -> com.ch3x.chatlyzer.ui.theme.TealAccent
         "low" -> com.ch3x.chatlyzer.ui.theme.SuccessGreen
         else -> com.ch3x.chatlyzer.ui.theme.TextGray
     }
@@ -148,7 +148,7 @@ fun GhostRiskSignalCard(
                         text = "... and ${examples.size - 2} more similar messages",
                         fontSize = 12.sp,
                         modifier = Modifier.padding(start = 8.dp),
-                        color = com.ch3x.chatlyzer.ui.theme.PrimaryPink
+                        color = com.ch3x.chatlyzer.ui.theme.GoldenYellow
                     )
                 }
             }

@@ -56,7 +56,7 @@ fun AnalysisWithExamplesCard(
                         text = "%.1f/%.0f".format(it, maxScore),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
-                        color = com.ch3x.chatlyzer.ui.theme.PrimaryPink
+                        color = com.ch3x.chatlyzer.ui.theme.GoldenYellow
                     )
                 }
             }
@@ -98,7 +98,7 @@ fun AnalysisWithExamplesCard(
                         text = "+${examples.size - 2} more examples",
                         fontSize = 12.sp,
                         modifier = Modifier.padding(start = 8.dp),
-                        color = com.ch3x.chatlyzer.ui.theme.PrimaryPink
+                        color = com.ch3x.chatlyzer.ui.theme.GoldenYellow
                     )
                 }
             }

@@ -32,7 +32,7 @@ data class AnalysisEntity(
     val resultJson: String? = null,
     val createdAt: Date,
     val updatedAt: Date,
-    val chatId: String,
+    val chatId: String?,
     val userId: String?,
     val deletedAt: Date? = null,
     val status: String

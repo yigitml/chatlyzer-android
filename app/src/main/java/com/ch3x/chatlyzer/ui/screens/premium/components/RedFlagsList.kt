@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.ch3x.chatlyzer.ui.components.RedFlagItem
-import com.ch3x.chatlyzer.ui.theme.Pink
+import com.ch3x.chatlyzer.ui.theme.GoldenYellow
 
 @Composable
 fun RedFlagsList(modifier: Modifier = Modifier) {
@@ -20,12 +20,12 @@ fun RedFlagsList(modifier: Modifier = Modifier) {
         RedFlagData(
             emoji = "👸",
             text = "Only complimented you 12 times (every time it was about your body)",
-            backgroundColor = Pink.copy(alpha = 0.2f)
+            backgroundColor = GoldenYellow.copy(alpha = 0.2f)
         ),
         RedFlagData(
             emoji = "💤",
             text = "Only texted you after midnight",
-            backgroundColor = Pink.copy(alpha = 0.2f)
+            backgroundColor = GoldenYellow.copy(alpha = 0.2f)
         )
     )
 

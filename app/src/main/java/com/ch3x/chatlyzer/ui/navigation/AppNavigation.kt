@@ -19,6 +19,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.ch3x.chatlyzer.ui.components.Header
 import com.ch3x.chatlyzer.ui.screens.analysis_detail.AnalysisDetailScreen
+import com.ch3x.chatlyzer.ui.screens.analysis_carousel.AnalysisCarouselScreen
 import com.ch3x.chatlyzer.ui.screens.analyzes.AnalyzesScreen
 import com.ch3x.chatlyzer.ui.screens.chat_create.ChatCreateScreen
 import com.ch3x.chatlyzer.ui.screens.chats.ChatsScreen
@@ -53,6 +54,9 @@ sealed class Screen(val route: String) {
     }
     object AnalysisDetail : Screen("analysis_detail/{id}") {
         fun createRoute(id: String) = "analysis_detail/${id}"
+    }
+    object AnalysisCarousel : Screen("analysis_carousel/{chatId}") {
+        fun createRoute(chatId: String) = "analysis_carousel/${chatId}"
     }
 }
 
@@ -160,7 +164,7 @@ fun AppNavigation(
             composable(Screen.Chats.route) {
                 ChatsScreen(
                     onNavigateAnalysis = {
-                        navController.navigate(Screen.Analyzes.createRoute(it))
+                        navController.navigate(Screen.AnalysisCarousel.createRoute(it))
                     },
                     onCreateChat = {
                         navController.navigate(Screen.ChatCreate.route)
@@ -171,16 +175,16 @@ fun AppNavigation(
             composable(
                 Screen.ChatCreate.route
             ) {
-                ChatCreateScreen { chatId ->
-                    // Navigate directly to AnalysisDetail after creation, skipping Analyzes list
-                    // We need to fetch the analysis ID first, but for now let's assume we can get it
-                    // Or we navigate to Analyzes list if we can't get the specific analysis ID yet
-                    // Ideally, ChatCreate should return the analysis ID or we fetch it here.
-                    // For now, let's keep it as is but change the popUpTo
-                     navController.navigate(Screen.Analyzes.createRoute(chatId)) {
-                        popUpTo(Screen.Chats.route) { inclusive = false }
+                ChatCreateScreen(
+                    onChatCreated = { chatId ->
+                        navController.navigate(Screen.AnalysisCarousel.createRoute(chatId)) {
+                            popUpTo(Screen.Chats.route) { inclusive = false }
+                        }
+                    },
+                    onNavigateBack = {
+                        navController.popBackStack()
                     }
-                }
+                )
             }
 
             composable(
@@ -203,6 +207,21 @@ fun AppNavigation(
                     ))) { backStackEntry ->
                 val id = backStackEntry.arguments?.getString("id") ?: ""
                 AnalysisDetailScreen(id)
+            }
+
+            composable(
+                Screen.AnalysisCarousel.route, arguments = listOf(
+                    navArgument(
+                        "chatId",
+                        builder = { type = NavType.StringType }
+                    ))) { backStackEntry ->
+                val chatId = backStackEntry.arguments?.getString("chatId") ?: ""
+                AnalysisCarouselScreen(
+                    chatId = chatId,
+                    onNavigateToCreate = {
+                        navController.navigate(Screen.ChatCreate.route)
+                    }
+                )
             }
         }
     }

@@ -145,7 +145,7 @@ fun AnimatedDashedCircle(
 @Composable
 fun LoadingDots(
     modifier: Modifier = Modifier,
-    color: Color = com.ch3x.chatlyzer.ui.theme.PrimaryPink,
+    color: Color = com.ch3x.chatlyzer.ui.theme.GoldenYellow,
     dotCount: Int = 3
 ) {
     val infiniteTransition = rememberInfiniteTransition(label = "loading_dots")

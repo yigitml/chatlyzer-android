@@ -25,6 +25,7 @@ import java.util.Date
 import java.util.UUID
 import javax.inject.Inject
 import androidx.core.net.toUri
+import com.ch3x.chatlyzer.data.mapper.toDomain
 import com.ch3x.chatlyzer.data.remote.AnalysisType
 import com.ch3x.chatlyzer.data.remote.PrivacyAnalysisPostRequest
 import com.ch3x.chatlyzer.domain.use_case.CreatePrivacyAnalysisUseCase
@@ -33,9 +34,11 @@ import com.ch3x.chatlyzer.domain.use_case.CreatePrivacyAnalysisUseCase
 class ChatCreateViewModel @Inject constructor(
     private val createChatUseCase: CreateChatUseCase,
     private val sharedDataRepository: SharedDataRepository,
+    private val createAnalysisUseCase: com.ch3x.chatlyzer.domain.use_case.CreateAnalysisUseCase,
     private val createPrivacyAnalysisUseCase: CreatePrivacyAnalysisUseCase,
     private val localFileRepository: com.ch3x.chatlyzer.domain.repository.LocalFileRepository,
-    private val dispatcherProvider: com.ch3x.chatlyzer.util.DispatcherProvider
+    private val dispatcherProvider: com.ch3x.chatlyzer.util.DispatcherProvider,
+    private val ghostResultRepository: com.ch3x.chatlyzer.data.repository.GhostResultRepository
 ) : ViewModel() {
 
     private val _state = mutableStateOf(ChatCreateState())
@@ -73,6 +76,7 @@ class ChatCreateViewModel @Inject constructor(
             is ChatCreateEvent.ShowPlatformSelector -> showPlatformSelector()
             is ChatCreateEvent.HidePlatformSelector -> hidePlatformSelector()
             is ChatCreateEvent.RetryImport -> retryImport()
+            is ChatCreateEvent.SetStep -> setStep(event.step)
         }
     }
 
@@ -168,7 +172,8 @@ class ChatCreateViewModel @Inject constructor(
                         fileSize = fileSize,
                         messageCount = messages.size,
                         platform = detectedPlatform
-                    )
+                    ),
+                    step = ChatCreateStep.CONFIGURE
                 )
 
                 // Auto-create removed to allow manual title/type selection
@@ -244,7 +249,8 @@ class ChatCreateViewModel @Inject constructor(
             importedFileInfo = null,
             detectedPlatform = null,
             selectedPlatform = ChatPlatform.WHATSAPP,
-            title = ""
+            title = "",
+            step = ChatCreateStep.IMPORT
         )
     }
 
@@ -281,24 +287,29 @@ class ChatCreateViewModel @Inject constructor(
                         ).collect { result ->
                             when (result) {
                                 is Resource.Success -> {
-                                    _state.value = _state.value.copy(
-                                        isCreating = false,
-                                        createdChatId = result.data.id
-                                    )
-                                    // Auto-trigger analysis creation here if needed, or just let the UI navigate
-                                    // Since we want to go straight to analysis detail, we might need to create the analysis here too.
-                                    // But for now, let's assume creating the chat is enough and the backend/UI handles the rest.
-                                    // Actually, the requirement is "Auto-trigger analysis creation".
-                                    // If 'createChat' only creates the chat, we need to call 'analyzeChat' next.
-                                    // However, looking at the code, there is no 'analyzeChat' use case injected here.
-                                    // We might need to inject 'CreateAnalysisUseCase' or similar if it exists.
-                                    // Let's check if 'createChatUseCase' already does analysis or if we need to add it.
-                                    // Based on 'AnalyzesScreen', there is an 'AnalyzeChat' event.
-                                    // For now, I will stick to creating the chat and letting the UI navigate to 'Analyzes'
-                                    // where it can trigger analysis or show the list.
-                                    // Wait, the plan says "navigate directly to the analysis result".
-                                    // If I navigate to 'Analyzes/{chatId}', the 'AnalyzesScreen' might handle it.
-                                    // Let's check 'AnalyzesScreen' logic again later. For now, this is consistent with the plan.
+                                    val chatId = result.data.id
+                                    // Chain analysis creation
+                                    createAnalysisUseCase(
+                                        com.ch3x.chatlyzer.data.remote.AnalysisPostRequest(chatId = chatId)
+                                    ).collect { analysisResult ->
+                                        when (analysisResult) {
+                                            is Resource.Success -> {
+                                                _state.value = _state.value.copy(
+                                                    isCreating = false,
+                                                    createdChatId = chatId
+                                                )
+                                            }
+                                            is Resource.Error -> {
+                                                _state.value = _state.value.copy(
+                                                    isCreating = false,
+                                                    errorMessage = "Chat created but analysis failed: ${analysisResult.message}"
+                                                )
+                                            }
+                                            is Resource.Loading -> {
+                                                // Already loading
+                                            }
+                                        }
+                                    }
                                 }
 
                                 is Resource.Error -> {
@@ -346,33 +357,35 @@ class ChatCreateViewModel @Inject constructor(
 
         viewModelScope.launch {
             _state.value = _state.value.copy(isCreating = true, errorMessage = "")
-
             try {
                 createPrivacyAnalysisUseCase(
-                    PrivacyAnalysisPostRequest(
-                        title = _state.value.title,
-                        isGhostMode = isGhostMode,
-                        messages = _state.value.messages.map {
-                            PrivacyAnalysisPostRequest.Message(
-                                it.sender,
-                                it.timestamp,
-                                it.content,
-                                it.metadata
-                            )
-                        }
-                    )
+                  PrivacyAnalysisPostRequest(
+                    title = _state.value.title,
+                    isGhostMode = isGhostMode,
+                    messages = _state.value.messages.map {
+                      PrivacyAnalysisPostRequest.Message(
+                        it.sender,
+                        it.timestamp,
+                        it.content,
+                        it.metadata
+                      )
+                    }
+                  )
                 ).collect { result ->
                     when (result) {
                         is Resource.Success -> {
                             if (isGhostMode) {
+                                // Store results in Ghost Repository and navigate with special ID
+                                ghostResultRepository.setResults(result.data.analyses.map { it.toDomain() })
                                 _state.value = _state.value.copy(
                                     isCreating = false,
-                                    createdChatId = result.data.firstOrNull()?.chatId
+                                    createdChatId = "GHOST_MODE"
                                 )
                             } else {
+                                // Normal privacy mode - navigates to carousel with chatId
                                 _state.value = _state.value.copy(
                                     isCreating = false,
-                                    createdChatId = result.data[0].chatId
+                                    createdChatId = result.data.chat.id
                                 )
                             }
                         }
@@ -402,5 +415,9 @@ class ChatCreateViewModel @Inject constructor(
 
     private fun clearError() {
         _state.value = _state.value.copy(errorMessage = "")
+    }
+
+    private fun setStep(step: ChatCreateStep) {
+        _state.value = _state.value.copy(step = step)
     }
 }

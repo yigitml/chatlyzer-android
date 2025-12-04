@@ -43,9 +43,10 @@ fun CreateChatFab(
         contentAlignment = Alignment.Center
     ) {
         if (isCreating) {
-            LoadingDots(
+            androidx.compose.material3.CircularProgressIndicator(
                 modifier = Modifier.size(24.dp),
-                color = MaterialTheme.colorScheme.onBackground
+                color = Color.White,
+                strokeWidth = 2.5.dp
             )
         } else {
             Icon(

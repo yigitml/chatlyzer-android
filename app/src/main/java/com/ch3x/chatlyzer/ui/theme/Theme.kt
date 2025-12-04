@@ -13,11 +13,11 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
-    primary = PrimaryPink,
+    primary = GoldenYellow,
     onPrimary = TextWhite,
-    secondary = PrimaryPurple,
+    secondary = WarmAmber,
     onSecondary = TextWhite,
-    tertiary = SecondaryOrange,
+    tertiary = TealAccent,
     background = BackgroundDark,
     onBackground = TextWhite,
     surface = SurfaceDark,
@@ -31,11 +31,11 @@ private val DarkColorScheme = darkColorScheme(
 // or provide a very specific light mode. Let's make Light mode a slightly lighter version 
 // but still keeping the brand identity.
 private val LightColorScheme = lightColorScheme(
-    primary = PrimaryPink,
+    primary = GoldenYellow,
     onPrimary = Color.White,
-    secondary = PrimaryPurple,
+    secondary = WarmAmber,
     onSecondary = Color.White,
-    tertiary = SecondaryOrange,
+    tertiary = TealAccent,
     background = Color(0xFFF5F5F7), // Light gray background
     onBackground = Color(0xFF121212),
     surface = Color.White,

@@ -76,7 +76,7 @@ fun UserComparisonCard(
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(horizontal = 16.dp),
-                    color = com.ch3x.chatlyzer.ui.theme.PrimaryPink
+                    color = com.ch3x.chatlyzer.ui.theme.GoldenYellow
                 )
                 
                 Column(

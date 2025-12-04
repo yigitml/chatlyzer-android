@@ -1,19 +1,18 @@
 package com.ch3x.chatlyzer.ui.screens.chat_create.components
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.ch3x.chatlyzer.ui.components.GlassCard
 
 @Composable
 fun ChatTitleSection(
@@ -21,23 +20,31 @@ fun ChatTitleSection(
     onTitleChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    com.ch3x.chatlyzer.ui.components.GlassCard(
-        modifier = modifier.fillMaxWidth()
+    GlassCard(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(24.dp)
     ) {
-        Column {
-            Text(
-                text = "Chat Title",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
+        OutlinedTextField(
+            value = title,
+            onValueChange = onTitleChange,
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text("Chat Title") },
+            placeholder = { Text("e.g. Family Group") },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            },
+            singleLine = true,
+            shape = RoundedCornerShape(16.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
+                focusedContainerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.3f)
             )
-            Spacer(modifier = Modifier.height(8.dp))
-            OutlinedTextField(
-                value = title,
-                onValueChange = onTitleChange,
-                modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("Enter chat title...") },
-                singleLine = true
-            )
-        }
+        )
     }
 } 

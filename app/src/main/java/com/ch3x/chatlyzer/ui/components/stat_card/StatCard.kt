@@ -47,7 +47,7 @@ fun ScoreCard(
                         targetValue = score,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = com.ch3x.chatlyzer.ui.theme.PrimaryPink,
+                        color = com.ch3x.chatlyzer.ui.theme.GoldenYellow,
                         suffix = "%",
                         decimalPlaces = 0
                     )
@@ -57,14 +57,14 @@ fun ScoreCard(
                             targetValue = score,
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
-                            color = com.ch3x.chatlyzer.ui.theme.PrimaryPink,
+                            color = com.ch3x.chatlyzer.ui.theme.GoldenYellow,
                             decimalPlaces = 1
                         )
                         Text(
                             text = "/${maxScore.toInt()}",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
-                            color = com.ch3x.chatlyzer.ui.theme.PrimaryPink
+                            color = com.ch3x.chatlyzer.ui.theme.GoldenYellow
                         )
                     }
                 }
@@ -76,8 +76,8 @@ fun ScoreCard(
                 targetProgress = score / maxScore,
                 modifier = Modifier.fillMaxWidth(),
                 gradientColors = listOf(
-                    com.ch3x.chatlyzer.ui.theme.PrimaryPink,
-                    com.ch3x.chatlyzer.ui.theme.PrimaryPurple
+                    com.ch3x.chatlyzer.ui.theme.GoldenYellow,
+                    com.ch3x.chatlyzer.ui.theme.WarmAmber
                 ),
                 trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f),
                 height = 8.dp,
@@ -123,7 +123,7 @@ fun StatCard(
                 text = value,
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
-                color = com.ch3x.chatlyzer.ui.theme.PrimaryPink,
+                color = com.ch3x.chatlyzer.ui.theme.GoldenYellow,
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center
             )
             

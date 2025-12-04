@@ -3,7 +3,6 @@ package com.ch3x.chatlyzer.ui.screens.chat_create.components
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -12,8 +11,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -23,8 +20,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Assessment
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -40,7 +35,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.ch3x.chatlyzer.ui.screens.chat_create.AnalysisType
 import com.ch3x.chatlyzer.ui.screens.chat_create.ChatCreateEvent
 import com.ch3x.chatlyzer.ui.theme.PrimaryGradientColors
@@ -56,8 +50,8 @@ fun AnalysisTypeSelector(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
-            text = "Create Analysis",
-            style = MaterialTheme.typography.headlineMedium,
+            text = "Analysis Type",
+            style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onBackground,
             fontWeight = FontWeight.Bold
         )
@@ -88,6 +82,40 @@ fun AnalysisTypeSelector(
                 onClick = { onEvent(ChatCreateEvent.ChangeAnalysisType(AnalysisType.GHOST)) }
             )
         }
+
+        // Integrated description with a cleaner look
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                    shape = RoundedCornerShape(12.dp)
+                )
+                .padding(16.dp)
+        ) {
+            Column {
+                Text(
+                    text = when (analysisType) {
+                        AnalysisType.NORMAL -> "Standard Analysis"
+                        AnalysisType.PRIVACY -> "Privacy Focused"
+                        AnalysisType.GHOST -> "Ghost Mode"
+                    },
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = when (analysisType) {
+                        AnalysisType.NORMAL -> "Full analysis with all insights. Data is stored securely."
+                        AnalysisType.PRIVACY -> "Messages are analyzed but NOT stored. Only results are saved."
+                        AnalysisType.GHOST -> "Nothing is saved. Results are shown once and then vanish forever."
+                    },
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
     }
 }
 
@@ -99,26 +127,25 @@ private fun AnalysisTypeCard(
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
-    val borderColor by animateColorAsState(
-        targetValue = if (selected) MaterialTheme.colorScheme.primary else Color.Transparent,
-        animationSpec = spring(stiffness = Spring.StiffnessLow),
-        label = "borderColor"
-    )
-    
     val containerColor = if (selected) {
         MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
     } else {
-        SurfaceLight
+        MaterialTheme.colorScheme.surface
     }
+
+    val iconColor by animateColorAsState(
+        targetValue = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+        label = "iconColor"
+    )
 
     Box(
         modifier = modifier
-            .aspectRatio(1f)
+            .height(100.dp) // Fixed height for consistency
             .clip(RoundedCornerShape(16.dp))
             .background(containerColor)
             .border(
-                width = 2.dp,
-                brush = if (selected) Brush.linearGradient(PrimaryGradientColors) else SolidColor(Color.Transparent),
+                width = if (selected) 2.dp else 1.dp,
+                brush = if (selected) Brush.linearGradient(PrimaryGradientColors) else SolidColor(MaterialTheme.colorScheme.outlineVariant),
                 shape = RoundedCornerShape(16.dp)
             )
             .clickable(onClick = onClick)
@@ -132,15 +159,15 @@ private fun AnalysisTypeCard(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                tint = iconColor,
                 modifier = Modifier.size(32.dp)
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = label,
-                style = MaterialTheme.typography.bodyMedium,
-                color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
-                fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
+                style = MaterialTheme.typography.labelMedium,
+                color = iconColor,
+                fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
                 textAlign = TextAlign.Center
             )
         }

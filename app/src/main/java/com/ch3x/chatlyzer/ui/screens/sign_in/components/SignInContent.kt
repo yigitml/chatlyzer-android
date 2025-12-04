@@ -33,11 +33,11 @@ fun SignInContent(
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(loginState) {
-        when (val state = loginState) {
+        when (loginState) {
             is SignInState.Success -> onLoginSuccess()
             is SignInState.Error -> {
                 snackbarHostState.showSnackbar(
-                    message = state.message
+                    message = loginState.message
                 )
             }
             else -> {}

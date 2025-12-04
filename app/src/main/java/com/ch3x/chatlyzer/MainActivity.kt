@@ -32,6 +32,9 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var preferencesRepositoryImpl: AppPreferencesRepository
 
+    @Inject
+    lateinit var sessionManager: com.ch3x.chatlyzer.domain.session.SessionManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -43,6 +46,16 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                 ) {
+                    val navController = androidx.navigation.compose.rememberNavController()
+
+                    LaunchedEffect(Unit) {
+                        sessionManager.logoutEvent.collect {
+                            navController.navigate(Screen.SignIn.route) {
+                                popUpTo(0) { inclusive = true }
+                            }
+                        }
+                    }
+
                     // Determine start destination once to avoid race conditions
                     val startDestinationState = produceState<String?>(initialValue = null) {
                         val launchCount = preferencesRepositoryImpl.getAppLaunchCount().first()
@@ -71,6 +84,7 @@ class MainActivity : ComponentActivity() {
 
                         AppNavigation(
                             context = this@MainActivity,
+                            navController = navController,
                             startDestination = startDestinationState.value!!,
                             launchCount = launchCount.value,
                             onBoardingCompleted = onBoardingCompleted.value,

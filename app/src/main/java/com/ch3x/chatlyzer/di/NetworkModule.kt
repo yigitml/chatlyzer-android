@@ -10,6 +10,7 @@ import com.ch3x.chatlyzer.data.remote.api.PrivacyAnalysisApi
 import com.ch3x.chatlyzer.data.remote.api.SubscriptionApi
 import com.ch3x.chatlyzer.data.remote.api.UserApi
 import com.ch3x.chatlyzer.data.remote.interceptor.DynamicJwtInterceptor
+import com.ch3x.chatlyzer.data.remote.interceptor.AuthInterceptor
 import com.ch3x.chatlyzer.util.Constants
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -41,10 +42,12 @@ object NetworkModule {
     @Singleton
     @Named("default")
     fun provideOkHttpClient(
-        dynamicJwtInterceptor: DynamicJwtInterceptor
+        dynamicJwtInterceptor: DynamicJwtInterceptor,
+        authInterceptor: AuthInterceptor
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(dynamicJwtInterceptor)
+            .addInterceptor(authInterceptor)
             .connectTimeout(Constants.API_TIMEOUT, TimeUnit.SECONDS)
             .readTimeout(Constants.API_TIMEOUT, TimeUnit.SECONDS)
             .writeTimeout(Constants.API_TIMEOUT, TimeUnit.SECONDS)
@@ -55,10 +58,12 @@ object NetworkModule {
     @Singleton
     @Named("analysis")
     fun provideAnalysisOkHttpClient(
-        dynamicJwtInterceptor: DynamicJwtInterceptor
+        dynamicJwtInterceptor: DynamicJwtInterceptor,
+        authInterceptor: AuthInterceptor
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(dynamicJwtInterceptor)
+            .addInterceptor(authInterceptor)
             .connectTimeout(Constants.ANALYSIS_API_TIMEOUT, TimeUnit.SECONDS)
             .readTimeout(Constants.ANALYSIS_API_TIMEOUT, TimeUnit.SECONDS)
             .writeTimeout(Constants.ANALYSIS_API_TIMEOUT, TimeUnit.SECONDS)

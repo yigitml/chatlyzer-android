@@ -20,4 +20,5 @@ sealed class ChatCreateEvent {
     object ShowPlatformSelector : ChatCreateEvent()
     object HidePlatformSelector : ChatCreateEvent()
     object RetryImport : ChatCreateEvent()
+    data class SetStep(val step: ChatCreateStep) : ChatCreateEvent()
 } 

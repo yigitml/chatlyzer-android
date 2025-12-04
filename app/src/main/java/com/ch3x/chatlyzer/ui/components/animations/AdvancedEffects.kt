@@ -83,7 +83,7 @@ fun PullToRefresh(
                 ) {
                     val sweepAngle = 360f * progress
                     drawArc(
-                        color = com.ch3x.chatlyzer.ui.theme.PrimaryPink,
+                        color = com.ch3x.chatlyzer.ui.theme.GoldenYellow,
                         startAngle = -90f,
                         sweepAngle = sweepAngle,
                         useCenter = false,

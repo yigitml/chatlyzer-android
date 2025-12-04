@@ -8,7 +8,7 @@ data class AnalysisDto(
     @SerializedName("result")    val result: Map<String, Any>? = null,
     @SerializedName("createdAt") val createdAt: Date,
     @SerializedName("updatedAt") val updatedAt: Date,
-    @SerializedName("chatId")    val chatId: String,
+    @SerializedName("chatId")    val chatId: String?,
     @SerializedName("userId")    val userId: String?,
     @SerializedName("deletedAt") val deletedAt: Date? = null,
     @SerializedName("status")    val status: String

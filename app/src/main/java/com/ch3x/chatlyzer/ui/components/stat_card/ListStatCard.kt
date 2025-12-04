@@ -62,7 +62,7 @@ fun ListStatCard(
                     text = "+${items.size - maxItemsToShow} more",
                     fontSize = 12.sp,
                     modifier = Modifier.padding(top = 4.dp),
-                    color = com.ch3x.chatlyzer.ui.theme.PrimaryPink
+                    color = com.ch3x.chatlyzer.ui.theme.GoldenYellow
                 )
             }
         }

@@ -34,7 +34,7 @@ interface ChatApi {
         @Body body: ChatPutRequest
     ): ApiResponse<ChatDto>
 
-    @DELETE("chat")
+    @retrofit2.http.HTTP(method = "DELETE", path = "chat", hasBody = true)
     suspend fun deleteChat(
         @Body body: ChatDeleteRequest
     ): ApiResponse<ChatDto>

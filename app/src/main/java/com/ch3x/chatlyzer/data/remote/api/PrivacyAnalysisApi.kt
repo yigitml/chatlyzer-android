@@ -8,7 +8,7 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 
 interface PrivacyAnalysisApi {
-  @POST("analysis")
+  @POST("privacy-analysis")
   suspend fun createPrivacyAnalysis(
     @Body privacyAnalysisPostRequest: PrivacyAnalysisPostRequest
   ): ApiResponse<PrivacyAnalysisDto>

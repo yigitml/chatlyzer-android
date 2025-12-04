@@ -24,7 +24,7 @@ fun ProgressStatCard(
     maxValue: Float = 10f,
     subtitle: String = "",
     icon: String,
-    progressColor: Color = com.ch3x.chatlyzer.ui.theme.PrimaryPink,
+    progressColor: Color = com.ch3x.chatlyzer.ui.theme.GoldenYellow,
     isPercentage: Boolean = false
 ) {
     var isVisible by remember { mutableStateOf(false) }

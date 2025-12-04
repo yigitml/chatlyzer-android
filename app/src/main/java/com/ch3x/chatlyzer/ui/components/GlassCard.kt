@@ -29,6 +29,7 @@ import com.ch3x.chatlyzer.ui.theme.SurfaceGlass
 @Composable
 fun GlassCard(
     modifier: Modifier = Modifier,
+    shape: androidx.compose.ui.graphics.Shape = CardShape,
     blurRadius: Dp = 12.dp,
     glassOpacity: Float = 0.12f,
     borderOpacity: Float = 0.15f,
@@ -37,7 +38,7 @@ fun GlassCard(
     val isDarkTheme = androidx.compose.foundation.isSystemInDarkTheme()
     
     val containerColor = if (isDarkTheme) {
-        MaterialTheme.colorScheme.onBackground.copy(alpha = glassOpacity)
+        MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f) // Darker background
     } else {
         androidx.compose.material3.MaterialTheme.colorScheme.surface
     }
@@ -48,11 +49,13 @@ fun GlassCard(
         androidx.compose.material3.MaterialTheme.colorScheme.onSurface
     }
 
+    val goldenYellow = Color(0xFFFFD700)
+
     val borderBrush = if (isDarkTheme) {
         Brush.verticalGradient(
             colors = listOf(
-                MaterialTheme.colorScheme.onBackground.copy(alpha = borderOpacity * 1.5f),
-                MaterialTheme.colorScheme.onBackground.copy(alpha = borderOpacity * 0.5f)
+                goldenYellow.copy(alpha = 0.5f),
+                goldenYellow.copy(alpha = 0.1f)
             )
         )
     } else {
@@ -86,7 +89,7 @@ fun GlassCard(
                     }
                 }
             },
-        shape = CardShape,
+        shape = shape,
         colors = CardDefaults.cardColors(
             containerColor = containerColor,
             contentColor = contentColor

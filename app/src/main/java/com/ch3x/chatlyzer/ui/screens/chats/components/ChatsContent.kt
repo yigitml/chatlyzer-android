@@ -34,6 +34,9 @@ import com.ch3x.chatlyzer.ui.theme.SurfaceDark
 import com.ch3x.chatlyzer.ui.components.animations.AnimatedEmptyState
 import com.ch3x.chatlyzer.ui.components.GradientButton
 
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+
 @Composable
 fun ChatsContent(
     state: ChatsState,
@@ -54,8 +57,11 @@ fun ChatsContent(
 
             ScreenState.Success -> {
                 if (state.chats.isEmpty()) {
+                    val scrollState = rememberScrollState()
                     Column(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(scrollState),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
@@ -67,7 +73,8 @@ fun ChatsContent(
                         Spacer(modifier = Modifier.height(24.dp))
                         GradientButton(
                             text = "Analyze New Chat",
-                            onClick = onCreateChat
+                            onClick = onCreateChat,
+                            modifier = Modifier.padding(horizontal = 16.dp)
                         )
                     }
                 } else {
@@ -77,14 +84,16 @@ fun ChatsContent(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                "Your Analyses",
-                                Modifier.padding(bottom = 8.dp, top = 16.dp),
+                                "Your Chats",
+                                Modifier.padding(bottom = 8.dp, top = 8.dp),
                                 fontWeight = FontWeight.Normal,
                                 fontSize = 22.sp
                             )
 
                             ChatList(
-                                modifier = Modifier.padding().weight(1f),
+                                modifier = Modifier
+                                    .padding(horizontal = 16.dp, vertical = 12.dp)
+                                    .weight(1f),
                                 chats = state.chats,
                                 onChatClick = onNavigateAnalysis,
                                 onDelete = onDelete

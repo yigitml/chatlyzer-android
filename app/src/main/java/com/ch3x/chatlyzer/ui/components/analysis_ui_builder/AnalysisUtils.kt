@@ -226,13 +226,13 @@ fun ScoreCard(
                         text = displayScore,
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
-                        color = com.ch3x.chatlyzer.ui.theme.PrimaryPink
+                        color = com.ch3x.chatlyzer.ui.theme.GoldenYellow
                     )
                     Text(
                         text = "/10",
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Bold,
-                        color = com.ch3x.chatlyzer.ui.theme.PrimaryPink,
+                        color = com.ch3x.chatlyzer.ui.theme.GoldenYellow,
                         modifier = Modifier.padding(bottom = 4.dp)
                     )
                 }
@@ -258,7 +258,7 @@ fun ScoreCard(
                             modifier = Modifier
                                 .weight(normalizedScore)
                                 .fillMaxHeight()
-                                .background(com.ch3x.chatlyzer.ui.theme.PrimaryPink)
+                                .background(com.ch3x.chatlyzer.ui.theme.GoldenYellow)
                         )
                     }
                     
